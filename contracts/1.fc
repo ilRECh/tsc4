@@ -17,7 +17,7 @@
   
   (slice remainder, cell next_cell) = tree.begin_parse().load_maybe_ref();
 
-  while(next_cell.cell_null?()) {
+  while(next_cell.cell_null?() == 0) {
     cell cell_to_return = find_branch_by_hash(hash, next_cell);
     
     if(cell_to_return.begin_parse().slice_empty?()) {
