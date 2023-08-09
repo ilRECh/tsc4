@@ -20,6 +20,7 @@
   cell next_cell = ts~load_ref();
 
   while(~(next_cell.null?())) {
+
     cell cell_to_return = find_branch_by_hash(hash, next_cell);
 
     if(cell_to_return.begin_parse().slice_empty?()) {
