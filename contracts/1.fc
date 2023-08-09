@@ -15,16 +15,14 @@
     return tree;
   }
   
-  (slice remainder, cell next_cell) = tree.begin_parse().load_maybe_ref();
+  (slice remainder, cell next_cell) = tree.begin_parse().load_ref();
 
-  while(next_cell.cell_null?() == 0) {
+  while(~next_cell.cell_null?()) {
     
     cell cell_to_return = find_branch_by_hash(hash, next_cell);
     
     if(cell_to_return.begin_parse().slice_empty?()) {
-      (slice new_remainder, cell new_next_cell) = remainder.load_maybe_ref();
-      remainder = new_remainder;
-      next_cell = new_next_cell;
+      next_cell = remainder~load_ref();
     } else {
       return cell_to_return;
     }
