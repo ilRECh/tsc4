@@ -14,6 +14,48 @@
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
+
+  tuple result = empty_tuple();
+  int current_row_A = 0;
+  int current_row_B = 0;
+  int current_column_B = 0;
+  tuple matrixATuple = matrixA.at(current_row_A);
+  tuple matrixBTuple = matrixB.at(current_row_B);
+
+  while(matrixATuple.null?() == 0) {
+
+    tuple result_row = empty_tuple();
+
+    int matrix_B_column_value = matrixB.at(0).at(current_column_B);
+
+    while(matrix_B_column_value.null?() == 0) {
+
+      int result_row_column_value = 0;
+
+      while(matrixBTuple.null?() == 0) {
+
+        result_row_column_value += matrixATuple.at(current_row_B) * matrixBTuple.at(current_column_B);
+
+        current_row_B += 1;
+        matrixBTuple = matrixB.at(current_row_B);
+      }
+
+      result_row~tpush(result_row_column_value);
+
+      current_row_B = 0;
+
+      current_column_B += 1;
+      matrix_B_column_value = matrixB.at(0).at(current_column_B);
+    }
+
+    result~tpush(result_row);
+
+    current_column_B = 0;
+
+    current_row_A += 1;
+    matrixATuple = matrixA.at(current_row_A);
+  }
+
+  return result;
 }
 
