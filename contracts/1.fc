@@ -11,5 +11,23 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
+  if(hash == tree.cell_hash()) {
+    return tree;
+  }
+  
+  (slice remainder, cell next_cell) = tree.begin_parse().load_maybe_ref();
+
+  while(next_cell.cell_null?()) {
+    cell cell_to_return = find_branch_by_hash(hash, next_cell);
+    
+    if(cell_to_return.begin_parse().slice_empty?()) {
+      (slice new_remainder, cell new_next_cell) = remainder.load_maybe_ref();
+      remainder = new_remainder;
+      next_cell = new_next_cell;
+    } else {
+      return cell_to_return;
+    }
+  }
+
   return begin_cell().end_cell();
 }
