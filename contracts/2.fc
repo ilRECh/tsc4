@@ -44,3 +44,5 @@
   return result;
 }
 
+() recv_internal() {
+}
