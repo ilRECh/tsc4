@@ -9,20 +9,28 @@
 () recv_internal() {
 }
 
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if(hash == tree.cell_hash()) {
-    return tree;
-  }
-  
-  slice ts = tree.begin_parse();
 
-  repeat (ts.slice_refs()) {
-    cell cell_to_return = find_branch_by_hash(hash, ts~load_ref());
+  tuple stack = null();
 
-    if(~ cell_to_return.begin_parse().slice_empty?()) {
-      return cell_to_return;
-    }
+  stack~push_back(tree);
+
+  while (~ stack.is_null()) {
+      cell current_cell = stack~pop_back();
+      slice cs = current_cell.begin_parse();
+
+      if(hash == cs.slice_hash()) {
+          return current_cell;
+      }
+
+      repeat (cs.slice_refs()) {
+          stack~push_back(cs~load_ref());
+      }
   }
 
   return begin_cell().end_cell();
