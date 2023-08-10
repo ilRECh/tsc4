@@ -39,4 +39,10 @@ export class Task1 implements Contract {
 
         return result.stack;
     }
+
+    async getTest(provider: ContractProvider) {
+        const result = await provider.get('test', []);
+
+        return result.stack;
+    }
 }

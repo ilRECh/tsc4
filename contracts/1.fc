@@ -10,26 +10,20 @@
 }
 
 ;; testable
-(int) find_branch_by_hash(int hash, cell tree) method_id {
-  
-  ;; if(hash == tree.cell_hash()) {
-  ;;   return tree;
-  ;; }
+(cell) find_branch_by_hash(int hash, cell tree) method_id {
+  if(hash == tree.cell_hash()) {
+    return tree;
+  }
   
   slice ts = tree.begin_parse();
 
-  int cell_is_null = ts.slice_empty?();
+  repeat (ts.slice_refs()) {
+    cell cell_to_return = find_branch_by_hash(hash, ts~load_ref());
 
-  ;; while(next_cell.cell_null?()) {
+    if(~ cell_to_return.begin_parse().slice_empty?()) {
+      return cell_to_return;
+    }
+  }
 
-    ;; cell cell_to_return = find_branch_by_hash(hash, next_cell);
-
-    ;; if(cell_to_return.begin_parse().slice_empty?()) {
-    ;;   next_cell = ts~load_ref();
-    ;; } else {
-    ;;   return cell_to_return;
-    ;; }
-  ;; }
-
-  return cell_is_null;
+  return begin_cell().end_cell();
 }

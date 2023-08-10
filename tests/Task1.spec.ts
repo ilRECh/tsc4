@@ -35,7 +35,7 @@ describe('Task1', () => {
         // the check is done inside beforeEach
         // blockchain and task1 are ready to use
 
-        let result = await task1.getFindBranchByHash(); 
+        let result = await task1.getTest(); 
 
         console.log('Result');
 
