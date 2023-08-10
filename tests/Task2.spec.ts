@@ -34,5 +34,25 @@ describe('Task2', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task2 are ready to use
+
+        let result = await task2.getMatrixMultiplier();
+
+        console.log('Result: ');
+
+        if(result.peek().type != 'null') {
+
+            let matrix = result.readTuple();
+    
+            console.log('size: ', matrix.remaining);
+    
+            while(matrix.remaining) {
+    
+                let row = matrix.pop();
+    
+                console.log(row);
+            }
+        } else {
+            console.log(result);
+        }
     });
 });

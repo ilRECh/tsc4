@@ -1,4 +1,5 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from 'ton-core';
+import { TupleBuilder } from '@ton/core';
+import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, Tuple } from 'ton-core';
 
 export type Task2Config = {};
 
@@ -25,5 +26,38 @@ export class Task2 implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getMatrixMultiplier(provider: ContractProvider) {
+        const result = await provider.get('matrix_multiplier', [
+            {
+                type: 'tuple', items: [
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(1) }, { type: 'int', value: BigInt(2) } ]
+                    },
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(3) }, { type: 'int', value: BigInt(4) } ]
+                    },
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(5) }, { type: 'int', value: BigInt(6) } ]
+                    },
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(7) }, { type: 'int', value: BigInt(8) } ]
+                    }
+                ],
+            },
+            {
+                type: 'tuple', items: [
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(1) }, { type: 'int', value: BigInt(2) },  { type: 'int', value: BigInt(3) }]
+                    },
+                    {
+                        type: 'tuple', items: [ { type: 'int', value: BigInt(4) }, { type: 'int', value: BigInt(5) },  { type: 'int', value: BigInt(6) }]
+                    }
+                ],
+            },
+        ]);
+
+        return result.stack;
     }
 }
