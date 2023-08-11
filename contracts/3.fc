@@ -36,7 +36,7 @@ int count_bits(int number) inline {
   return bit_amount;
 }
 
-(int, int, slice) load_from_chunked(int flag_size, slice list_slice) {
+(int, int, slice) load_from_chunked(int flag_size, slice list_slice) inline {
   int data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
   int result = 0;
   int result_size = 0;
@@ -65,7 +65,7 @@ int count_bits(int number) inline {
 }
 
 ;; This means that the value in_result is at least flag_size sized
-(int, slice) load_from_chunked_simple(int in_result, slice list_slice, int flag_size) {
+(int, slice) load_from_chunked_simple(int in_result, slice list_slice, int flag_size) inline {
   in_result = ((in_result & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
 
   if(list_slice.slice_bits() == 0) {
@@ -83,7 +83,7 @@ int count_bits(int number) inline {
 (tuple, builder) load_to_list_chunked(int value,
                                       int value_size,
                                       tuple head,
-                                      builder current_element) {
+                                      builder current_element) inline {
 
   int already_has = current_element.builder_bits();
   int to_load = min(1023 - already_has, value_size);
@@ -104,7 +104,7 @@ int count_bits(int number) inline {
 }
 
 ;; Building cell linked-list from the list-style list
-cell build_list(tuple head) {
+cell build_list(tuple head) inline {
   (builder element, head) = uncons(head);
   cell result = element.end_cell();
 
