@@ -19,6 +19,7 @@
 () recv_internal() {
 }
 
+
 forall X -> int is_null (X x) asm "ISNULL";
 
 int count_bits(int number) inline {
@@ -102,12 +103,25 @@ int count_bits(int number) inline {
   return (head, current_element);
 }
 
+;; Building cell linked-list from the list-style list
+cell build_list(tuple head) {
+  (builder element, head) = uncons(head);
+  cell result = element.end_cell();
+
+  while(~ head.is_null()) {
+    (element, head) = uncons(head);
+    result = element.store_ref(result).end_cell();
+  }
+
+  return result;
+}
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   slice list_slice = linked_list.begin_parse();
 
   if(list_slice.slice_empty?()) {
-    return begin_cell().end_cell();
+    ;; return begin_cell().end_cell();
   }
 
   int flag_size = count_bits(flag);
@@ -125,7 +139,12 @@ int count_bits(int number) inline {
       if(~ list_slice.null?()) {
         (to_compare, to_compare_size, list_slice) = load_from_chunked(flag_size, list_slice);
       } else {
+        if(current_element.builder_bits() > 0) {
+          head = cons(current_element, head);
+        }
+
         return build_list(head);
+        ;; return head;
       }
     } else { ;; shift 1 bit
       if(~ list_slice.null?()) {
@@ -134,26 +153,29 @@ int count_bits(int number) inline {
       } else {
         (head, current_element) = load_to_list_chunked(to_compare, to_compare_size, head, current_element);
 
-        ;; if(current_element.builder_bits() > 0) {
-        ;;   head = cons(current_element, head);
-        ;; }
+        if(current_element.builder_bits() > 0) {
+          head = cons(current_element, head);
+        }
 
         return build_list(head);
+        ;; return head;
       }
     }
     
   }
 
   return build_list(head);
+  ;; return head;
 }
 
-;; testable
-;; (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-;;   ;; int flag_size = count_bits(flag);
-;;   ;; int value_size = count_bits(value);
+;; ;; testable
+;; (var) find_and_replace(int flag, int value, cell linked_list) method_id {
+  
+;;   tuple head = null();
 
-;;   ;; slice flag_slice = begin_cell().load_uint(flag, flag_size).end_cell();
-;;   ;; slice value_slice = begin_cell().load_uint(value, value).end_cell();
+;;   head = cons(begin_cell(), head);
 
-;;   return begin_cell().end_cell();
+;;   (head.car())~store_uint(1, 1);
+
+;;   return head.car();
 ;; }

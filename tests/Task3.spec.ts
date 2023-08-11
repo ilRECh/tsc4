@@ -55,6 +55,23 @@ describe('Task3', () => {
                   '\nExpected: ' + modified);
     }
 
+    it('fun', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1001), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
+                                                                       
+       console.log(result);
+        
+    });
+
     it('should match 1', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
@@ -128,6 +145,44 @@ describe('Task3', () => {
        dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
                  result.readCell(),
                  dec2bin(0b11100001111110000111));
+        
+    });
+
+    it('should match 5', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
+                                                                       
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b1111100001111111111000011111));
+        
+    });
+
+    it('should match 6', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
+                                                                       
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b1111100001111111111000011111));
         
     });
 
