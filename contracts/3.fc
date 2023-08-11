@@ -82,19 +82,20 @@ int count_bits(int number) inline {
 ;; I'm thinking that full value of the value must be loaded
 (tuple, builder) load_to_list_chunked(int value,
                                       int value_size,
+                                      int chunk_size,
                                       tuple head,
                                       builder current_element) {
 
   int already_has = current_element.builder_bits();
-  int to_load = min(1023 - already_has, value_size);
+  int to_load = min(chunk_size - already_has, value_size);
 
   while(value_size > 0) {
     current_element~store_uint(value >> (value_size - to_load), to_load);
     value &= ~ ((value >> (value_size - to_load)) << (value_size - to_load));
     value_size -= to_load;
-    to_load = min(value_size, 1023);
+    to_load = min(value_size, chunk_size);
 
-    if(current_element.builder_bits() == 1023) {
+    if(current_element.builder_bits() == chunk_size) {
       head = cons(current_element, head);
       current_element = begin_cell();
     }
@@ -126,6 +127,7 @@ cell build_list(tuple head) {
 
   int flag_size = count_bits(flag);
   int value_size = count_bits(value);
+  int chunk_size = list_slice.slice_bits();
 
   (int to_compare, int to_compare_size, list_slice) = load_from_chunked(flag_size, list_slice);
 
@@ -134,7 +136,7 @@ cell build_list(tuple head) {
 
   while(true) {
     if(to_compare == flag) {
-      (head, current_element) = load_to_list_chunked(value, value_size, head, current_element);
+      (head, current_element) = load_to_list_chunked(value, value_size, chunk_size, head, current_element);
     
       if(~ list_slice.null?()) {
         (to_compare, to_compare_size, list_slice) = load_from_chunked(flag_size, list_slice);
@@ -148,10 +150,10 @@ cell build_list(tuple head) {
       }
     } else { ;; shift 1 bit
       if(~ list_slice.null?()) {
-        (head, current_element) = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, head, current_element);
+        (head, current_element) = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, chunk_size, head, current_element);
         (to_compare, list_slice) = load_from_chunked_simple(to_compare, list_slice, flag_size);
       } else {
-        (head, current_element) = load_to_list_chunked(to_compare, to_compare_size, head, current_element);
+        (head, current_element) = load_to_list_chunked(to_compare, to_compare_size, chunk_size, head, current_element);
 
         if(current_element.builder_bits() > 0) {
           head = cons(current_element, head);
