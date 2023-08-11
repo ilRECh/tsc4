@@ -19,8 +19,141 @@
 () recv_internal() {
 }
 
-;; testable
-(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+forall X -> int is_null (X x) asm "ISNULL";
+
+int count_bits(int number) inline {
+  int bit_amount = 128;
+
+  while(bit_amount - 1 >= 0) {
+    if((number >> (bit_amount - 1)) & 1) {
+      return bit_amount;
+    }
+
+    bit_amount -= 1;
+  }
+
+  return bit_amount;
 }
 
+(int, int, slice) load_from_chunked(int flag_size, slice list_slice) {
+  int data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
+  int result = 0;
+  int result_size = 0;
+
+  while(1) {
+    result_size += data_bits_remain_to_load;
+    result |= list_slice~load_uint(data_bits_remain_to_load) << (flag_size - data_bits_remain_to_load);
+    flag_size -= data_bits_remain_to_load;
+
+    if(list_slice.slice_bits() == 0) {
+      if(~ list_slice.slice_refs_empty?()) {
+        list_slice = (list_slice~load_ref()).begin_parse();
+        data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
+      } else {
+        result >>= flag_size;
+        return (result, result_size, null());
+      }
+    }
+
+    if(flag_size <= 0) {
+      return (result, result_size, list_slice);
+    }
+  }
+
+  return (result, result_size, list_slice);
+}
+
+;; This means that the value in_result is at least flag_size sized
+(int, slice) load_from_chunked_simple(int in_result, slice list_slice, int flag_size) {
+  in_result = ((in_result & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
+
+  if(list_slice.slice_bits() == 0) {
+    if(~ list_slice.slice_refs_empty?()) {
+      list_slice = (list_slice~load_ref()).begin_parse();
+    } else {
+      list_slice = null();
+    }
+  }
+
+  return (in_result, list_slice);
+}
+
+;; I'm thinking that full value of the value must be loaded
+(tuple, builder) load_to_list_chunked(int value,
+                                      int value_size,
+                                      tuple head,
+                                      builder current_element) {
+
+  int already_has = current_element.builder_bits();
+  int to_load = min(1023 - already_has, value_size);
+
+  while(value_size > 0) {
+    current_element~store_uint(value >> (value_size - to_load), to_load);
+    value &= ~ ((value >> (value_size - to_load)) << (value_size - to_load));
+    value_size -= to_load;
+    to_load = min(value_size, 1023);
+
+    if(current_element.builder_bits() == 1023) {
+      head = cons(current_element, head);
+      current_element = begin_cell();
+    }
+  }
+
+  return (head, current_element);
+}
+
+;; testable
+(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  slice list_slice = linked_list.begin_parse();
+
+  if(list_slice.slice_empty?()) {
+    return begin_cell().end_cell();
+  }
+
+  int flag_size = count_bits(flag);
+  int value_size = count_bits(value);
+
+  (int to_compare, int to_compare_size, list_slice) = load_from_chunked(flag_size, list_slice);
+
+  tuple head = null();
+  builder current_element = begin_cell();
+
+  while(true) {
+    if(to_compare == flag) {
+      (head, current_element) = load_to_list_chunked(value, value_size, head, current_element);
+    
+      if(~ list_slice.null?()) {
+        (to_compare, to_compare_size, list_slice) = load_from_chunked(flag_size, list_slice);
+      } else {
+        return build_list(head);
+      }
+    } else { ;; shift 1 bit
+      if(~ list_slice.null?()) {
+        (head, current_element) = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, head, current_element);
+        (to_compare, list_slice) = load_from_chunked_simple(to_compare, list_slice, flag_size);
+      } else {
+        (head, current_element) = load_to_list_chunked(to_compare, to_compare_size, head, current_element);
+
+        ;; if(current_element.builder_bits() > 0) {
+        ;;   head = cons(current_element, head);
+        ;; }
+
+        return build_list(head);
+      }
+    }
+    
+  }
+
+  return build_list(head);
+}
+
+;; testable
+;; (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+;;   ;; int flag_size = count_bits(flag);
+;;   ;; int value_size = count_bits(value);
+
+;;   ;; slice flag_slice = begin_cell().load_uint(flag, flag_size).end_cell();
+;;   ;; slice value_slice = begin_cell().load_uint(value, value).end_cell();
+
+;;   return begin_cell().end_cell();
+;; }

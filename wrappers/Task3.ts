@@ -1,3 +1,4 @@
+import { Slice } from '@ton/core';
 import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from 'ton-core';
 
 export type Task3Config = {};
@@ -26,4 +27,23 @@ export class Task3 implements Contract {
             body: beginCell().endCell(),
         });
     }
+
+    async getLinkedList(provider: ContractProvider, flag: bigint, value: bigint, linkedList: Cell) {
+        const result = await provider.get('find_and_replace', [
+            {type: 'int', value: flag},
+            {type: 'int', value: value},
+            {type: 'cell', cell: linkedList}
+        ]);
+    
+        return result.stack;
+    }
+
+    // async getLoadFromChunked(provider: ContractProvider, flag_size: bigint, list_slice: Cell) {
+    //     const result = await provider.get('load_from_chunked', [
+    //         {type: 'int', value: flag_size},
+    //         {type: 'slice', cell: list_slice}
+    //     ]);
+    
+    //     return result.stack;
+    // }
 }
