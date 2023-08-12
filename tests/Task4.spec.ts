@@ -33,34 +33,50 @@ describe('Task4', () => {
 
     it('should encrypt', async () => {
         
-        let message = 0x2148656C6C6F;
+        let message = 0x61626378797A
+        let message2 = 0x41424358595A;
         let message_size = 6 * 8;
 
-        let result = await task4.getEncrypted(BigInt(4), beginCell().storeUint(0, 32).storeUint(message, message_size).endCell());
+        let result = await task4.getEncrypted(BigInt(4), beginCell()
+            .storeUint(0, 32)
+            .storeUint(message, message_size)
+            .storeRef(beginCell()
+                .storeUint(message2, message_size)
+                .endCell())
+            .endCell());
         
-        let resSlice = result.readCell().beginParse();
+        console.log(result);
+        // let resSlice = result.readCell().beginParse();
 
-        resSlice.loadUint(32);
+        // resSlice.loadUint(32);
 
-        console.log("Size: ", resSlice.remainingBits,
-                    "\nOriginal: ", message.toString(16),
-                    "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+        // console.log("Size: ", resSlice.remainingBits,
+        //             "\nOriginal: ", message.toString(16),
+        //             "\nResult  : ", resSlice.loadUint(message_size).toString(16));
     });
 
     it('should decrypt', async () => {
         
-        let message = 0x214C69707073;
+        let message = 0x656667626364;
+        let message2 = 0x454647424344;
         let message_size = 6 * 8;
 
-        let result = await task4.getDecrypted(BigInt(4), beginCell().storeUint(0, 32).storeUint(message, message_size).endCell());
+        let result = await task4.getDecrypted(BigInt(4), beginCell()
+        .storeUint(0, 32)
+        .storeUint(message, message_size)
+        .storeRef(beginCell()
+            .storeUint(message2, message_size)
+            .endCell())
+        .endCell());
         
-        let resSlice = result.readCell().beginParse();
+        console.log(result);
+        // let resSlice = result.readCell().beginParse();
 
-        resSlice.loadUint(32);
+        // resSlice.loadUint(32);
 
-        console.log("Size: ", resSlice.remainingBits,
-                    "\nOriginal: ", message.toString(16),
-                    "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+        // console.log("Size: ", resSlice.remainingBits,
+        //             "\nOriginal: ", message.toString(16),
+        //             "\nResult  : ", resSlice.loadUint(message_size).toString(16));
     
     });
 });

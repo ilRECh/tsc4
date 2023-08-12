@@ -9,7 +9,7 @@
 () recv_internal() {
 }
 
-const ASCII_SIZE = 128;
+const ASCII_SIZE = 26;
 
 forall X -> int is_null (X x) asm "ISNULL";
 
@@ -21,7 +21,6 @@ cell build_list(tuple head) inline {
   while(~ head.is_null()) {
     (element, head) = uncons(head);
     result = element.store_ref(result).end_cell();
-    dump_stack();
   }
 
   return result;
@@ -37,13 +36,17 @@ cell shifting(int shift, slice text_slice) {
       char = text_slice~load_uint(8);
     
       ;; only for a-z A-Z
-      ;; if(((char >= 65) & (char <= 90)) | ((char >= 97) & (char <= 122))) {
-      ;;   shifted~store_uint(((((((char - 97) < 0) * 32) + (char - 97) + shift) >= 26) ? (shift - 26) : (shift)) + char, 8);
-      ;; } else {
-      ;;   shifted~store_uint(char, 8);
-      ;; }
+      if((char >= 65) & (char <= 90)) {
+        shifted~store_uint((((char - 65 + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
+      } else {
+        if((char >= 97) & (char <= 122)) {
+          shifted~store_uint((((char - 97 + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
+        } else {
+          shifted~store_uint(char, 8);
+        }
+      }
 
-      shifted~store_uint((((char + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
+      ;; shifted~store_uint((((char + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
     }
 
     head = cons(shifted, head);
