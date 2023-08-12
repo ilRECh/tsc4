@@ -9,6 +9,8 @@
 () recv_internal() {
 }
 
+const ASCII_SIZE = 256;
+
 forall X -> int is_null (X x) asm "ISNULL";
 
 ;; Building cell linked-list from the list-style list
@@ -34,11 +36,14 @@ cell shifting(int shift, slice text_slice) {
     repeat(text_slice.slice_bits() / 8) {
       char = text_slice~load_uint(8);
     
-      if(((char >= 65) & (char <= 90)) | ((char >= 97) & (char <= 122))) {
-        shifted~store_uint(((((((char - 97) < 0) * 32) + (char - 97) + shift) >= 26) ? (shift - 26) : (shift)) + char, 8);        
-      } else {
-        shifted~store_uint(char, 8);
-      }
+      ;; only for a-z A-Z
+      ;; if(((char >= 65) & (char <= 90)) | ((char >= 97) & (char <= 122))) {
+      ;;   shifted~store_uint(((((((char - 97) < 0) * 32) + (char - 97) + shift) >= 26) ? (shift - 26) : (shift)) + char, 8);
+      ;; } else {
+      ;;   shifted~store_uint(char, 8);
+      ;; }
+
+      shifted~store_uint((((char + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
     }
 
     head = cons(shifted, head);
@@ -59,14 +64,14 @@ cell shifting(int shift, slice text_slice) {
 
   slice text_slice = text.begin_parse();
 
-  if(((shift % 26) == 0) | text_slice.slice_empty?()) {
+  if(((shift % ASCII_SIZE) == 0) | text_slice.slice_empty?()) {
     return text;
   }
 
-  shift %= 26;
+  shift %= ASCII_SIZE;
   
   if(shift < 0) {
-    shift += 26;
+    shift += ASCII_SIZE;
   }
 
   text_slice~load_uint(32);
@@ -77,17 +82,17 @@ cell shifting(int shift, slice text_slice) {
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   slice text_slice = text.begin_parse();
 
-  if(((shift % 26) == 0) | text_slice.slice_empty?()) {
+  if(((shift % ASCII_SIZE) == 0) | text_slice.slice_empty?()) {
     return text;
   }
 
-  shift %= 26;
+  shift %= ASCII_SIZE;
   
   if(shift < 0) {
-    shift += 26;
+    shift += ASCII_SIZE;
   }
 
-  shift = 26 - shift;
+  shift = ASCII_SIZE - shift;
 
   text_slice~load_uint(32);
   return shifting(shift, text_slice);
