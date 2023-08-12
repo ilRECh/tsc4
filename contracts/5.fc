@@ -18,6 +18,40 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  return null();
-}
+  
+  if((k == 0)) {
+    return empty_tuple();
+  }
 
+  tuple result = empty_tuple();
+
+  int fib = 1;
+  int n_1 = 0;
+  int n_2 = 1;
+
+  if((n == 0) & (k >= 1)) {
+    result~tpush(0);
+    k -= 1;
+  }
+
+  if((n <= 1) & (k >= 1)) {
+    result~tpush(1);
+    k -= 1;
+    n -= 1;
+  }
+
+  repeat(n - 2) {
+    fib = n_1 + n_2;
+    n_1 = n_2;
+    n_2 = fib;
+  }
+
+  repeat(k) {
+    fib = n_1 + n_2;
+    n_1 = n_2;
+    n_2 = fib;
+    result~tpush(fib);
+  }
+
+  return result;
+}
