@@ -9,21 +9,64 @@
 () recv_internal() {
 }
 
+global cell return_cell;
+global int is_found;
+global int hash_to_find;
+
+() find_branch_by_hash_recursive(cell tree) impure inline {
+  if(hash_to_find == tree.cell_hash()) {
+    is_found = true;
+    return_cell = tree;
+    return ();
+  }
+
+  slice tree_slice = tree.begin_parse();
+
+  repeat (tree_slice.slice_refs()) {
+    find_branch_by_hash_recursive(tree_slice~load_ref());
+
+    if(is_found) {
+      return ();
+    }
+  }
+}
+
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if(hash == tree.cell_hash()) {
-    return tree;
-  }
-  
-  slice ts = tree.begin_parse();
 
-  repeat (ts.slice_refs()) {
-    tree = find_branch_by_hash(hash, ts~load_ref());
+  hash_to_find = hash;
+  is_found = false;
+  return_cell = null();
 
-    if(~ tree.begin_parse().slice_empty?()) {
-      return tree;
-    }
+  find_branch_by_hash_recursive(tree);
+
+  if(is_found) {
+    return return_cell;
   }
 
   return begin_cell().end_cell();
 }
+
+;; (var, var) test() method_id {
+;;   cell a = begin_cell()
+;;                 .store_uint(4, 16)
+;;             .end_cell();
+
+;;   int cellHash = a.cell_hash();
+
+;;       cell c = begin_cell()
+;;         .store_uint(1, 16)
+;;         .store_ref(begin_cell()
+;;             .store_uint(2, 16)
+;;         .end_cell())
+;;         .store_ref(begin_cell()
+;;             .store_uint(3, 16)
+;;             .store_ref(a)
+;;             .store_ref(begin_cell()
+;;                 .store_uint(5, 16)
+;;             .end_cell())
+;;         .end_cell())
+;;     .end_cell();
+
+;;   return (a, find_branch_by_hash(cellHash, c));
+;; }
