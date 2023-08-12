@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { beginCell, Cell, toNano } from 'ton-core';
 import { Task4 } from '../wrappers/Task4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -31,8 +31,36 @@ describe('Task4', () => {
         });
     });
 
-    it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and task4 are ready to use
+    it('should encrypt', async () => {
+        
+        let message = 0x2148656C6C6F;
+        let message_size = 6 * 8;
+
+        let result = await task4.getEncrypted(BigInt(4), beginCell().storeUint(0, 32).storeUint(message, message_size).endCell());
+        
+        let resSlice = result.readCell().beginParse();
+
+        resSlice.loadUint(32);
+
+        console.log("Size: ", resSlice.remainingBits,
+                    "\nOriginal: ", message.toString(16),
+                    "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+    });
+
+    it('should decrypt', async () => {
+        
+        let message = 0x214C69707073;
+        let message_size = 6 * 8;
+
+        let result = await task4.getDecrypted(BigInt(4), beginCell().storeUint(0, 32).storeUint(message, message_size).endCell());
+        
+        let resSlice = result.readCell().beginParse();
+
+        resSlice.loadUint(32);
+
+        console.log("Size: ", resSlice.remainingBits,
+                    "\nOriginal: ", message.toString(16),
+                    "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+    
     });
 });

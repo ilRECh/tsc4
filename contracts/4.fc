@@ -9,13 +9,87 @@
 () recv_internal() {
 }
 
+forall X -> int is_null (X x) asm "ISNULL";
+
+;; Building cell linked-list from the list-style list
+cell build_list(tuple head) inline {
+  (builder element, head) = uncons(head);
+  cell result = element.end_cell();
+
+  while(~ head.is_null()) {
+    (element, head) = uncons(head);
+    result = element.store_ref(result).end_cell();
+    dump_stack();
+  }
+
+  return result;
+}
+
+cell shifting(int shift, slice text_slice) {
+  int char = 0;
+  builder shifted = begin_cell().store_uint(0, 32);
+  tuple head = null();
+
+  while(1) {
+    repeat(text_slice.slice_bits() / 8) {
+      char = text_slice~load_uint(8);
+    
+      if(((char >= 65) & (char <= 90)) | ((char >= 97) & (char <= 122))) {
+        shifted~store_uint(((((((char - 97) < 0) * 32) + (char - 97) + shift) >= 26) ? (shift - 26) : (shift)) + char, 8);        
+      } else {
+        shifted~store_uint(char, 8);
+      }
+    }
+
+    head = cons(shifted, head);
+
+    if(text_slice.slice_refs()) {
+      shifted = begin_cell();
+      text_slice = (text_slice~load_ref()).begin_parse();
+    } else {
+      return build_list(head);
+    }
+  }
+
+  return build_list(head);
+}
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+
+  slice text_slice = text.begin_parse();
+
+  if(((shift % 26) == 0) | text_slice.slice_empty?()) {
+    return text;
+  }
+
+  shift %= 26;
+  
+  if(shift < 0) {
+    shift += 26;
+  }
+
+  text_slice~load_uint(32);
+  return shifting(shift, text_slice);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  slice text_slice = text.begin_parse();
+
+  if(((shift % 26) == 0) | text_slice.slice_empty?()) {
+    return text;
+  }
+
+  shift %= 26;
+  
+  if(shift < 0) {
+    shift += 26;
+  }
+
+  shift = 26 - shift;
+
+  text_slice~load_uint(32);
+  return shifting(shift, text_slice);
 }
 
