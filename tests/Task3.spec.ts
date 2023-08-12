@@ -186,6 +186,69 @@ describe('Task3', () => {
         
     });
 
+    it('should match 6', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b111), BigInt(0b1), beginCell()
+                                                                        .storeUint(0b1, 1)
+                                                                       .endCell());
+                                                                       
+       dump_cell(dec2bin(0b1),
+                 result.readCell(),
+                 dec2bin(0b1));
+        
+    });
+
+    it('should match 7', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
+                                                                            .storeUint(0b1, 1)
+                                                                            .storeRef(
+                                                                                beginCell()
+                                                                                    .storeUint(0b1, 1)
+                                                                                    .storeRef(
+                                                                                        beginCell()
+                                                                                            .storeUint(0b1, 1)
+                                                                                            .storeRef(
+                                                                                                beginCell()
+                                                                                                    .storeUint(0b1, 1)
+                                                                                                    .storeRef(
+                                                                                                        beginCell()
+                                                                                                            .storeUint(0b1, 1)
+                                                                                                            .storeRef(
+                                                                                                                beginCell()
+                                                                                                                    .storeUint(0b1, 1)
+                                                                                                                    .storeRef(
+                                                                                                                        beginCell()
+                                                                                                                            .storeUint(0b1, 1)
+                                                                                                                            .storeRef(
+                                                                                                                                beginCell()
+                                                                                                                                    .storeUint(0b1, 1)
+                                                                                                                                .endCell()
+                                                                                                                            )
+                                                                                                                        .endCell()
+                                                                                                                    )
+                                                                                                                .endCell()
+                                                                                                            )
+                                                                                                        .endCell()
+                                                                                                    )
+                                                                                                .endCell()
+                                                                                            )
+                                                                                        .endCell()
+                                                                                    )
+                                                                                .endCell()
+                                                                            )
+                                                                        .endCell());
+                                                                       
+       dump_cell(dec2bin(0b11111111),
+                 result.readCell(),
+                 dec2bin(0b11));
+        
+    });
+
     // it('give the 24 bits sized value 5', async () => {
     //     // the check is done inside beforeEach
     //     // blockchain and task3 are ready to 
