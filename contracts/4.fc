@@ -9,7 +9,7 @@
 () recv_internal() {
 }
 
-const ASCII_SIZE = 256;
+const ASCII_SIZE = 128;
 
 forall X -> int is_null (X x) asm "ISNULL";
 
