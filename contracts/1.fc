@@ -9,21 +9,22 @@
 () recv_internal() {
 }
 
-global cell return_cell;
+global cell current_cell;
 global int is_found;
 global int hash_to_find;
 
-() find_branch_by_hash_recursive(cell tree) impure inline {
-  if(hash_to_find == tree.cell_hash()) {
+() find_branch_by_hash_recursive() impure {
+  if(hash_to_find == current_cell.cell_hash()) {
     is_found = true;
-    return_cell = tree;
     return ();
   }
 
-  slice tree_slice = tree.begin_parse();
+  slice tree_slice = current_cell.begin_parse();
 
   repeat (tree_slice.slice_refs()) {
-    find_branch_by_hash_recursive(tree_slice~load_ref());
+
+    current_cell = tree_slice~load_ref();
+    find_branch_by_hash_recursive();
 
     if(is_found) {
       return ();
@@ -36,12 +37,12 @@ global int hash_to_find;
 
   hash_to_find = hash;
   is_found = false;
-  return_cell = null();
+  current_cell = tree;
 
-  find_branch_by_hash_recursive(tree);
+  find_branch_by_hash_recursive();
 
   if(is_found) {
-    return return_cell;
+    return current_cell;
   }
 
   return begin_cell().end_cell();
