@@ -35,15 +35,47 @@ describe('Task1', () => {
         // the check is done inside beforeEach
         // blockchain and task1 are ready to use
 
-        let cell = beginCell().storeUint(1, 1).endCell();
+        let cell = beginCell().storeUint(0xDEADBEEF, 32).endCell();
         let cellHash = cell.hash();
-
         let cellTree = beginCell()
-            .storeRef(cell)
-            .endCell();
+                            .storeUint(1, 16)
+                            .storeRef(beginCell()
+                                .storeUint(2, 16)
+                            .endCell())
+                            .storeRef(beginCell()
+                                .storeUint(3, 16)
+                                .storeRef(beginCell()
+                                        .storeUint(5, 16)
+                                        .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .storeRef(cell)
+                                .endCell())
+                                .endCell())
+                                .endCell())
+                                .endCell())
+                                .endCell())
+                                    .endCell())
+                                .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                .endCell())
+                            .endCell())
+                        .endCell();
 
-        let result = await task1.getFindBranchByHash(); 
+        let result = await blockchain.runGetMethod(task1.address, 'find_branch_by_hash', [
+            {type: 'int', value: BigInt("0x" + cellHash.toString('hex'))},
+            {type: 'cell', cell: cellTree}
+        ]);
 
-        console.log('Result', result);
+        console.log('Input : ', cell,
+                  '\nResult: ', result.stackReader.readCell(),
+                  '\n   Gas:', result.gasUsed);
     });
 });

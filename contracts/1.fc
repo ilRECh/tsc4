@@ -13,6 +13,10 @@ global cell current_cell;
 global int is_found;
 global int hash_to_find;
 
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 () find_branch_by_hash_recursive() impure {
   if(hash_to_find == current_cell.cell_hash()) {
     is_found = true;
@@ -47,27 +51,3 @@ global int hash_to_find;
 
   return begin_cell().end_cell();
 }
-
-;; (var, var) test() method_id {
-;;   cell a = begin_cell()
-;;                 .store_uint(4, 16)
-;;             .end_cell();
-
-;;   int cellHash = a.cell_hash();
-
-;;       cell c = begin_cell()
-;;         .store_uint(1, 16)
-;;         .store_ref(begin_cell()
-;;             .store_uint(2, 16)
-;;         .end_cell())
-;;         .store_ref(begin_cell()
-;;             .store_uint(3, 16)
-;;             .store_ref(a)
-;;             .store_ref(begin_cell()
-;;                 .store_uint(5, 16)
-;;             .end_cell())
-;;         .end_cell())
-;;     .end_cell();
-
-;;   return (a, find_branch_by_hash(cellHash, c));
-;; }
