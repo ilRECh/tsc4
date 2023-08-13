@@ -120,12 +120,16 @@ cell build_list() inline {
     if((to_compare & bit_mask) == flag) {
     
       if(list_slice.null?()) {
-        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        if(to_compare_size - flag_size > 0) {
+          load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        }
         load_to_list_chunked(value, value_size);
         return build_list();
       }
 
-      load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+      if(to_compare_size - flag_size > 0) {
+        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+      }
       load_to_list_chunked(value, value_size);
       (to_compare, to_compare_size) = load_from_chunked();
 
