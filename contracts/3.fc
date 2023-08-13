@@ -22,22 +22,9 @@
 global slice list_slice;
 global int flag_size;
 global tuple head;
+global builder current_element;
 
 forall X -> int is_null (X x) asm "ISNULL";
-
-int count_bits(int number) inline {
-  int bit_amount = 128;
-
-  while(bit_amount - 1 >= 0) {
-    if((number >> (bit_amount - 1)) & 1) {
-      return bit_amount;
-    }
-
-    bit_amount -= 1;
-  }
-
-  return bit_amount;
-}
 
 (int, int) load_from_chunked() inline {
   int data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
@@ -66,9 +53,8 @@ int count_bits(int number) inline {
 }
 
 ;; I'm thinking that full value of the value must be loaded
-builder load_to_list_chunked(int value,
-                             int value_size,
-                             builder current_element) inline {
+() load_to_list_chunked(int value,
+                        int value_size) impure inline {
 
   int already_has = current_element.builder_bits();
   int to_load = min(1023 - already_has, value_size);
@@ -85,7 +71,7 @@ builder load_to_list_chunked(int value,
     }
   }
 
-  return current_element;
+  return ();
 }
 
 ;; Building cell linked-list from the list-style list
@@ -109,19 +95,33 @@ cell build_list() inline {
     return begin_cell().end_cell();
   }
 
-  flag_size = count_bits(flag);
-  int value_size = count_bits(value);
+  ;; searching for the position of the last non-zero bit in the flag integer
+  ;; the flag int is guaranteed to be non-zero
+  flag_size = 127;
+  while((flag & (1 << flag_size)) == 0) {
+    flag_size -= 1;
+  }
+  flag_size += 1;
+
+  ;; searching for the position of the last non-zero bit in the value integer
+  ;; the value int is guaranteed to be non-zero
+  int value_size = 127;
+  while((value & (1 << value_size)) == 0) {
+    value_size -= 1;
+  }
+  value_size += 1;
 
   (int to_compare, int to_compare_size) = load_from_chunked();
 
   head = null();
-  builder current_element = begin_cell();
+  current_element = begin_cell();
 
   while(true) {
     if(to_compare == flag) {
-      current_element = load_to_list_chunked(value, value_size, current_element);
     
       if(list_slice.null?()) {
+        load_to_list_chunked(value, value_size);
+
         if(current_element.builder_bits() > 0) {
           head = cons(current_element, head);
         }
@@ -129,11 +129,13 @@ cell build_list() inline {
         return build_list();
       }
 
+      load_to_list_chunked(value, value_size);
       (to_compare, to_compare_size) = load_from_chunked();
+
     } else { ;; shift 1 bit
 
       if(list_slice.null?()) {
-        current_element = load_to_list_chunked(to_compare, to_compare_size, current_element);
+        load_to_list_chunked(to_compare, to_compare_size);
 
         if(current_element.builder_bits() > 0) {
           head = cons(current_element, head);
@@ -142,7 +144,7 @@ cell build_list() inline {
         return build_list();
       }
       
-      current_element = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, current_element);
+      load_to_list_chunked((to_compare >> (to_compare_size - 1)) & 1, 1);
       to_compare = ((to_compare & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
       if(list_slice.slice_bits() == 0) {
         if(~ list_slice.slice_refs_empty?()) {
