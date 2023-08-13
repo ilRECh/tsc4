@@ -117,10 +117,9 @@ cell build_list() inline {
   current_element = begin_cell();
 
   while(true) {
-    if(((to_compare & ~ (-1 << flag_size)) ^ flag) == 0) {
+    if(to_compare == flag) {
     
       if(list_slice.null?()) {
-        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
         load_to_list_chunked(value, value_size);
 
         if(current_element.builder_bits() > 0) {
@@ -130,7 +129,6 @@ cell build_list() inline {
         return build_list();
       }
 
-      load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
       load_to_list_chunked(value, value_size);
       (to_compare, to_compare_size) = load_from_chunked();
 
@@ -146,12 +144,8 @@ cell build_list() inline {
         return build_list();
       }
       
-      if(to_compare_size == 256) {
-        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
-      }
-      
-      to_compare = (to_compare << 1) | (list_slice~load_uint(1));
-      to_compare_size += 1;
+      load_to_list_chunked((to_compare >> (to_compare_size - 1)) & 1, 1);
+      to_compare = ((to_compare & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
 
       if(list_slice.slice_bits() == 0) {
         if(~ list_slice.slice_refs_empty?()) {
