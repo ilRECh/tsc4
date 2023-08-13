@@ -27,7 +27,6 @@
 
   int fib = 1;
   int n_1 = 0;
-  int n_2 = 1;
 
   if((n == 0) & (k >= 1)) {
     result~tpush(0);
@@ -41,15 +40,11 @@
   }
 
   repeat(n - 2) {
-    fib = n_1 + n_2;
-    n_1 = n_2;
-    n_2 = fib;
+    (fib, n_1) = (n_1 + fib, fib);
   }
 
   repeat(k) {
-    fib = n_1 + n_2;
-    n_1 = n_2;
-    n_2 = fib;
+    (fib, n_1) = (n_1 + fib, fib);
     result~tpush(fib);
   }
 
