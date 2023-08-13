@@ -77,5 +77,7 @@ describe('Task1', () => {
         console.log('Input : ', cell,
                   '\nResult: ', result.stackReader.readCell(),
                   '\n   Gas:', result.gasUsed);
+
+        console.log(result);
     });
 });
