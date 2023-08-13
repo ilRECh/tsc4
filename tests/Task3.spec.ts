@@ -249,6 +249,20 @@ describe('Task3', () => {
         
     });
 
+    it('should match 6', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b10101), BigInt(0b10), beginCell()
+                                                                        .storeUint(0b1010100110011001110101001101, 28)
+                                                                       .endCell());
+                                                                       
+       dump_cell(dec2bin(0b1010100110011001110101001101),
+                 result.readCell(),
+                 dec2bin(0b1000110011001110001101));
+        
+    });
+
     // it('give the 24 bits sized value 5', async () => {
     //     // the check is done inside beforeEach
     //     // blockchain and task3 are ready to 
