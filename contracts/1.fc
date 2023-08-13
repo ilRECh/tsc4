@@ -9,44 +9,77 @@
 () recv_internal() {
 }
 
-global cell current_cell;
-global int is_found;
-global int hash_to_find;
+;; global cell current_cell;
+;; global int is_found;
+;; global int hash_to_find;
+
+;; Current best is 7966 gas
+
+;; () find_branch_by_hash_recursive() impure {
+;;   if(hash_to_find == current_cell.cell_hash()) {
+;;     is_found = true;
+;;     return ();
+;;   }
+
+;;   slice tree_slice = current_cell.begin_parse();
+
+;;   repeat (tree_slice.slice_refs()) {
+
+;;     current_cell = tree_slice~load_ref();
+;;     find_branch_by_hash_recursive();
+
+;;     if(is_found) {
+;;       return ();
+;;     }
+;;   }
+;; }
+
+;; testable
+;; (cell) find_branch_by_hash(int hash, cell tree) method_id {
+
+;;   hash_to_find = hash;
+;;   is_found = false;
+;;   current_cell = tree;
+
+;;   find_branch_by_hash_recursive();
+
+;;   if(is_found) {
+;;     return current_cell;
+;;   }
+
+;;   return begin_cell().end_cell();
+;; }
 
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
-() find_branch_by_hash_recursive() impure {
-  if(hash_to_find == current_cell.cell_hash()) {
-    is_found = true;
-    return ();
-  }
-
-  slice tree_slice = current_cell.begin_parse();
-
-  repeat (tree_slice.slice_refs()) {
-
-    current_cell = tree_slice~load_ref();
-    find_branch_by_hash_recursive();
-
-    if(is_found) {
-      return ();
-    }
-  }
-}
-
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
 
-  hash_to_find = hash;
-  is_found = false;
-  current_cell = tree;
+  if(tree.cell_hash() == hash) {
+    return tree;
+  }
 
-  find_branch_by_hash_recursive();
+  tuple stack = null();
 
-  if(is_found) {
-    return current_cell;
+  stack~push_back(tree);
+
+  slice cs = null();
+
+  while (~ stack.is_null()) {
+
+      tree = stack~pop_back();
+
+      if(hash == tree.cell_hash()) {
+        return tree;
+      }
+
+      cs = tree.begin_parse();
+
+      repeat (cs.slice_refs()) {
+          stack~push_back(cs~load_ref());
+      }
   }
 
   return begin_cell().end_cell();
