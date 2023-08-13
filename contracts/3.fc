@@ -21,6 +21,7 @@
 
 global slice list_slice;
 global int flag_size;
+global tuple head;
 
 forall X -> int is_null (X x) asm "ISNULL";
 
@@ -65,10 +66,9 @@ int count_bits(int number) inline {
 }
 
 ;; I'm thinking that full value of the value must be loaded
-(tuple, builder) load_to_list_chunked(int value,
-                                      int value_size,
-                                      tuple head,
-                                      builder current_element) inline {
+builder load_to_list_chunked(int value,
+                             int value_size,
+                             builder current_element) inline {
 
   int already_has = current_element.builder_bits();
   int to_load = min(1023 - already_has, value_size);
@@ -85,11 +85,11 @@ int count_bits(int number) inline {
     }
   }
 
-  return (head, current_element);
+  return current_element;
 }
 
 ;; Building cell linked-list from the list-style list
-cell build_list(tuple head) inline {
+cell build_list() inline {
   (builder element, head) = uncons(head);
   cell result = element.end_cell();
 
@@ -114,48 +114,45 @@ cell build_list(tuple head) inline {
 
   (int to_compare, int to_compare_size) = load_from_chunked();
 
-  tuple head = null();
+  head = null();
   builder current_element = begin_cell();
 
   while(true) {
     if(to_compare == flag) {
-      (head, current_element) = load_to_list_chunked(value, value_size, head, current_element);
+      current_element = load_to_list_chunked(value, value_size, current_element);
     
-      if(~ list_slice.null?()) {
-        (to_compare, to_compare_size) = load_from_chunked();
-      } else {
+      if(list_slice.null?()) {
         if(current_element.builder_bits() > 0) {
           head = cons(current_element, head);
         }
 
-        return build_list(head);
+        return build_list();
       }
+
+      (to_compare, to_compare_size) = load_from_chunked();
     } else { ;; shift 1 bit
-      if(~ list_slice.null?()) {
-        (head, current_element) = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, head, current_element);
 
-        ;; This means that the value in_result is at least flag_size sized
-        to_compare = ((to_compare & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
-
-        if(list_slice.slice_bits() == 0) {
-          if(~ list_slice.slice_refs_empty?()) {
-            list_slice = (list_slice~load_ref()).begin_parse();
-          } else {
-            list_slice = null();
-          }
-        }
-      } else {
-        (head, current_element) = load_to_list_chunked(to_compare, to_compare_size, head, current_element);
+      if(list_slice.null?()) {
+        current_element = load_to_list_chunked(to_compare, to_compare_size, current_element);
 
         if(current_element.builder_bits() > 0) {
           head = cons(current_element, head);
         }
 
-        return build_list(head);
+        return build_list();
+      }
+      
+      current_element = load_to_list_chunked((to_compare >> (flag_size - 1)) & 1, 1, current_element);
+      to_compare = ((to_compare & ((-1) ^ (1 << (flag_size - 1)))) << 1) | (list_slice~load_uint(1));
+      if(list_slice.slice_bits() == 0) {
+        if(~ list_slice.slice_refs_empty?()) {
+          list_slice = (list_slice~load_ref()).begin_parse();
+        } else {
+          list_slice = null();
+        }
       }
     }
-    
   }
 
-  return build_list(head);
+  return build_list();
 }
