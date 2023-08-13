@@ -76,12 +76,11 @@ forall X -> int is_null (X x) asm "ISNULL";
 
 ;; Building cell linked-list from the list-style list
 cell build_list() inline {
-  (builder element, head) = uncons(head);
-  cell result = element.end_cell();
+  cell result = current_element.end_cell();
 
   while(~ head.is_null()) {
-    (element, head) = uncons(head);
-    result = element.store_ref(result).end_cell();
+    (current_element, head) = uncons(head);
+    result = current_element.store_ref(result).end_cell();
   }
 
   return result;
@@ -121,11 +120,6 @@ cell build_list() inline {
     
       if(list_slice.null?()) {
         load_to_list_chunked(value, value_size);
-
-        if(current_element.builder_bits() > 0) {
-          head = cons(current_element, head);
-        }
-
         return build_list();
       }
 
@@ -136,11 +130,6 @@ cell build_list() inline {
 
       if(list_slice.null?()) {
         load_to_list_chunked(to_compare, to_compare_size);
-
-        if(current_element.builder_bits() > 0) {
-          head = cons(current_element, head);
-        }
-
         return build_list();
       }
       
