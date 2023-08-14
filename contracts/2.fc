@@ -23,24 +23,23 @@ int tlen(tuple t) asm "TLEN";
     return null();
   }
 
-  int A_rows = matrixA.tlen();
   int A_columns_B_rows = matrixA.at(0).tlen();
   int B_columns = matrixB.at(0).tlen();
   int current_row_A = 0;
   int current_row_B = 0;
   int current_column_B = 0;
 
-  while(current_row_A < A_rows) {
+  repeat (matrixA.tlen()) {
     tuple matrixATuple = matrixA.at(current_row_A);
 
     tuple result_row = empty_tuple();
 
-    while(current_column_B < B_columns) {
+    repeat (B_columns) {
       int matrix_B_column_value = matrixB.at(0).at(current_column_B);
 
       int result_row_column_value = 0;
 
-      while(current_row_B < A_columns_B_rows) {
+      repeat (A_columns_B_rows) {
         tuple matrixBTuple = matrixB.at(current_row_B);
 
         result_row_column_value += matrixATuple.at(current_row_B) * matrixBTuple.at(current_column_B);
