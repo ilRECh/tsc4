@@ -16,54 +16,31 @@
 () recv_internal() {
 }
 
-tuple solve(int n, int k) asm """
-
-  // checking the k == 0 case
-  DUP
-  0 EQINT
-  IFJMP:<{ 2DROP NIL RET }>
-
-  // creating empty tuple
-  0 TUPLE
-
-  // check for n == 0 case
-  s2 XCHG0
-  DUP
-  0 EQINT
-  IF:<{ s2 XCHG0 0 PUSHINT TPUSH SWAP DEC SWAP }>ELSE<{ s2 XCHG0 }>
-
-  ROT
-
-  0 PUSHINT
-  1 PUSHINT
-
-  s2 XCHG0
-
-  // calculating n - 1
-  DEC
-  REPEAT:<{ s1 s1 XCPU ADD }>
-
-  // calculating k
-  3 ROLL
-  REPEAT:<{ s1 s1 XCPU ADD s2 s2 XCPU TPUSH s2 XCHG0 }>
-
-  2DROP
-
-  RET
-""";
-
-
-
-
-
-
-;;   0 PUSHINT
-;;   1 PUSHINT
-
-;;   IFJMP:<{ 0 TUPLE RET }>
-
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
+  
+  if(k == 0) {
+    return empty_tuple();
+  }
 
-  return solve(n, k);
+  tuple result = empty_tuple();
+
+  int fib = 0;
+  int n_1 = 1;
+
+  if(n == 0) {
+    result~tpush(0);
+    k -= 1;
+  }
+
+  repeat(n - 1) {
+    (fib, n_1) = (n_1 + fib, fib);
+  }
+
+  repeat(k) {
+    (fib, n_1) = (n_1 + fib, fib);
+    result~tpush(fib);
+  }
+
+  return result;
 }
