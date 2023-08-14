@@ -72,7 +72,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 1', async () => {
+    it('a', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -91,7 +91,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 2', async () => {
+    it('b', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -110,7 +110,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 3', async () => {
+    it('c', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -129,7 +129,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 4', async () => {
+    it('d', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -148,7 +148,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 5', async () => {
+    it('e', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -167,7 +167,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 6', async () => {
+    it('f', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -186,7 +186,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 6', async () => {
+    it('g', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -200,7 +200,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 7', async () => {
+    it('h', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -249,7 +249,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 8', async () => {
+    it('i', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -263,7 +263,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 9', async () => {
+    it('j', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -277,7 +277,7 @@ describe('Task3', () => {
         
     });
 
-    it('should match 9', async () => {
+    it('k', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to 
 
@@ -296,52 +296,4 @@ describe('Task3', () => {
                  "101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110100001");
 
     });
-
-    // it('give the 24 bits sized value 5', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
-
-    //     let result = await task3.getLoadFromChunked(BigInt(24), beginCell()
-    //                                                             .storeUint(0b111100001111, 12)
-    //                                                             .storeRef(
-    //                                                                 beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                 .endCell()
-    //                                                                     )
-    //                                                             .endCell());
-                                                                       
-    //     console.log('', result.pop(), '\n',
-    //     result.pop(), '\n',
-    //     result);
-
-    //     if(result.readTupleOpt() != null) {
-    //         dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //                  result.readCell(),
-    //                  dec2bin(0b11100001111110000111));
-    //     }
-        
-    // });
-
-    // it('give the 24 bits sized value 6', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
-
-    //     let result = await task3.getLoadFromChunked(BigInt(1), beginCell()
-    //                                                             .storeUint(0b111100001111, 12)
-    //                                                             .storeRef(
-    //                                                                 beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                 .endCell()
-    //                                                                     )
-    //                                                             .endCell());
-                                                                       
-    //     console.log('', result.pop(), '\n',
-    //     result.pop(), '\n',
-    //     result);
-
-    //     dump_cell(dec2bin(0b111100001111111100001111),
-    //                 result.readCell(),
-    //                 dec2bin(0b11100001111111100001111));
-        
-    // });
 });
