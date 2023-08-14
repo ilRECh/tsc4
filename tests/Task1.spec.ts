@@ -38,36 +38,66 @@ describe('Task1', () => {
         let cell = beginCell().storeUint(0xDEADBEEF, 32).endCell();
         let cellHash = cell.hash();
         let cellTree = beginCell()
-                            .storeUint(1, 16)
-                            .storeRef(beginCell()
-                                .storeUint(2, 16)
+        .storeUint(1, 16)
+            .storeRef(beginCell()
+                .storeUint(5, 16)
+                .endCell())
+            .storeRef(beginCell()
+                .storeUint(5, 16)
+                .endCell())
+            .storeRef(beginCell()
+                .storeUint(5, 16)
+                .endCell())
+            .storeRef(beginCell()
+                .storeUint(3, 16)
+                .storeRef(beginCell()
+                    .storeUint(5, 16)
+                    .endCell())
+                .storeRef(beginCell()
+                    .storeUint(5, 16)
+                    .storeRef(beginCell()
+                        .storeUint(5, 16)
+                        .endCell())
+                    .storeRef(beginCell()
+                        .storeUint(5, 16)
+                        .storeRef(beginCell()
+                            .storeUint(5, 16)
                             .endCell())
+                        .storeRef(beginCell()
                             .storeRef(beginCell()
-                                .storeUint(3, 16)
+                                .storeUint(5, 16)
+                                .endCell())
+                            .storeUint(5, 16)
+                            .storeRef(beginCell()
                                 .storeRef(beginCell()
+                                    .storeUint(5, 16)
+                                    .endCell())
+                                .storeUint(5, 16)
+                                .storeRef(beginCell()
+                                    .storeRef(beginCell()
+                                        .storeUint(5, 16)
+                                        .endCell())
+                                    .storeUint(5, 16)
+                                    .storeRef(beginCell()
                                         .storeUint(5, 16)
                                         .storeRef(beginCell()
-                                    .storeUint(5, 16)
-                                    .storeRef(beginCell()
-                                    .storeUint(5, 16)
-                                    .storeRef(beginCell()
-                                    .storeUint(5, 16)
-                                    .storeRef(beginCell()
-                                    .storeUint(5, 16)
-                                    .storeRef(beginCell()
-                                    .storeUint(5, 16)
-                                    .storeRef(cell)
-                                .endCell())
-                                .endCell())
-                                .endCell())
-                                .endCell())
-                                .endCell())
+                                            .storeUint(5, 16)
+                                            .endCell())
+                                        .storeRef(cell)
+                                        .endCell())
                                     .endCell())
-                                .storeRef(beginCell()
-                                    .storeUint(5, 16)
                                 .endCell())
                             .endCell())
-                        .endCell();
+                        .endCell())
+                    .storeRef(beginCell()
+                        .storeUint(5, 16)
+                        .endCell())
+                    .endCell())
+                .storeRef(beginCell()
+                    .storeUint(5, 16)
+                .endCell())
+            .endCell())
+        .endCell();
 
         let result = await blockchain.runGetMethod(task1.address, 'find_branch_by_hash', [
             {type: 'int', value: BigInt("0x" + cellHash.toString('hex'))},
@@ -75,9 +105,10 @@ describe('Task1', () => {
         ]);
 
         console.log('Input : ', cell,
-                  '\nResult: ', result.stackReader.readCell(),
+                //   '\nResult: ', result.stackReader.readCell(),
+                  '\nResult: ', result.stackReader,
                   '\n   Gas:', result.gasUsed);
 
-        console.log(result);
+        // console.log(result);
     });
 });
