@@ -54,6 +54,12 @@ describe('Task5', () => {
     it('should give [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]', async () => {
         let result = await task5.getFibonacciSequence(BigInt(0), BigInt(10));
         console.log(result.readTuple());
+        // let result = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence', [
+        //     {type: 'int', value: BigInt(0)},
+        //     {type: 'int', value: BigInt(10)}
+        // ]);
+        // console.log(result);
+    
     });
 
     it('should give good enough stuff', async () => {

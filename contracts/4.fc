@@ -26,7 +26,7 @@ cell build_list(tuple head) inline {
   return result;
 }
 
-cell shifting(int shift, slice text_slice) {
+cell shifting(int shift, slice text_slice) inline {
   int char = 0;
   builder shifted = begin_cell().store_uint(0, 32);
   tuple head = null();
