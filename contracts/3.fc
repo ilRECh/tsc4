@@ -20,42 +20,39 @@
 }
 
 global slice list_slice;
-global int flag_size_g;
-global int flag_g;
-global int value_size_g;
-global int value_g;
-global int to_compare_g;
-global int to_compare_size_g;
+global int flag_size;
 global tuple head;
 global builder current_element;
 
 forall X -> int is_null (X x) asm "ISNULL";
 
-const INT_LEN = 256;
+(int, int) load_from_chunked() inline {
+  int data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
+  int result = 0;
+  int result_size = 0;
 
-() load_from_chunked() impure inline  {
-
-  int data_bits_remain_to_load = min(INT_LEN - to_compare_size_g, list_slice.slice_bits());
-
-  while((INT_LEN - to_compare_size_g) > 0) {
-    to_compare_size_g += data_bits_remain_to_load;
-    to_compare_g |= list_slice~load_uint(data_bits_remain_to_load) << (INT_LEN - to_compare_size_g);
+  while((flag_size - result_size) > 0) {
+    result_size += data_bits_remain_to_load;
+    result |= list_slice~load_uint(data_bits_remain_to_load) << (flag_size - result_size);
 
     if(list_slice.slice_bits() == 0) {
       if(~ list_slice.slice_refs_empty?()) {
         list_slice = (list_slice~load_ref()).begin_parse();
-        data_bits_remain_to_load = min(INT_LEN - to_compare_size_g, list_slice.slice_bits());
+        data_bits_remain_to_load = min(flag_size - result_size, list_slice.slice_bits());
       } else {
-        to_compare_g >>= INT_LEN - to_compare_size_g;
+        result >>= flag_size - result_size;
+
         list_slice = null();
-        return ();
+        
+        return (result, result_size);
       }
     }
   }
 
-  return ();
+  return (result, result_size);
 }
 
+;; I'm thinking that full value of the value must be loaded
 () load_to_list_chunked(int value,
                         int value_size) impure inline {
 
@@ -72,34 +69,6 @@ const INT_LEN = 256;
       current_element = begin_cell();
     }
   }
-
-  return ();
-}
-
-() examine() impure inline {
-  int flag_offset = to_compare_size_g - flag_size_g;
-
-  while(flag_offset >= 0) {
-    if((to_compare_g & (flag_g << flag_offset)) == (flag_g << flag_offset)) {
-
-      load_to_list_chunked(to_compare_g >> (flag_size_g + flag_offset), to_compare_size_g - (flag_size_g + flag_offset));
-      load_to_list_chunked(value_g, value_size_g);
-
-      to_compare_size_g -=  to_compare_size_g - flag_offset;
-      to_compare_g &= ~ (-1 << flag_offset); 
-    }
-
-    flag_offset -= 1;
-  }
-
-  ;; Like, seriously)))))))) Try to compile the code without these two lines. What is wrong with you? Those are already ints, do you even check the global vars types?????
-  int a = to_compare_g;
-  int b = to_compare_size_g;
-
-  load_to_list_chunked(a, b);
-
-  to_compare_size_g = 0;
-  to_compare_g = 0;
 
   return ();
 }
@@ -127,77 +96,68 @@ cell build_list() inline {
 
   ;; searching for the position of the last non-zero bit in the flag integer
   ;; the flag int is guaranteed to be non-zero
-  flag_size_g = 127;
-  while((flag & (1 << flag_size_g)) == 0) {
-    flag_size_g -= 1;
+  flag_size = 127;
+  while((flag & (1 << flag_size)) == 0) {
+    flag_size -= 1;
   }
-  flag_size_g += 1;
-  flag_g = flag;
+  flag_size += 1;
 
   ;; searching for the position of the last non-zero bit in the value integer
   ;; the value int is guaranteed to be non-zero
-  value_size_g = 127;
-  while((value & (1 << value_size_g)) == 0) {
-    value_size_g -= 1;
+  int value_size = 127;
+  while((value & (1 << value_size)) == 0) {
+    value_size -= 1;
   }
-  value_size_g += 1;
-  value_g = value;
+  value_size += 1;
 
-  to_compare_g = 0;
-  to_compare_size_g = 0;
+  (int to_compare, int to_compare_size) = load_from_chunked();
 
   head = null();
   current_element = begin_cell();
+  int bit_mask = ~ ((-1) << flag_size);
 
-  do {
-    load_from_chunked();
-    examine();
-  } until(list_slice.null?());
+  while(true) {
+    if((to_compare & bit_mask) == flag) {
+    
+      if(list_slice.null?()) {
+        if(to_compare_size - flag_size > 0) {
+          load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        }
+        load_to_list_chunked(value, value_size);
+        return build_list();
+      }
+
+      if(to_compare_size - flag_size > 0) {
+        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+      }
+      load_to_list_chunked(value, value_size);
+      (to_compare, to_compare_size) = load_from_chunked();
+
+    } else { ;; shift 1 bit
+
+      if(list_slice.null?()) {
+        load_to_list_chunked(to_compare, to_compare_size);
+        return build_list();
+      }
+
+      to_compare = (to_compare << 1) | list_slice~load_uint(1);
+      to_compare_size += 1;
+
+      if(to_compare_size == 256) {
+        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        to_compare_size = flag_size;
+        to_compare &= bit_mask;
+      }
+
+      if(list_slice.slice_bits() == 0) {
+        if(~ list_slice.slice_refs_empty?()) {
+          list_slice = (list_slice~load_ref()).begin_parse();
+        } else {
+          list_slice = null();
+        }
+      }
+    }
+  }
 
   return build_list();
-
-  ;; while(true) {
-  ;;   if((to_compare_g & bit_mask) == flag) {
-    
-  ;;     if(list_slice.null?()) {
-  ;;       if(to_compare_size_g - flag_size_g > 0) {
-  ;;         load_to_list_chunked(to_compare_g >> flag_size_g, to_compare_size_g - flag_size_g);
-  ;;       }
-  ;;       load_to_list_chunked(value, value_size);
-  ;;       return build_list();
-  ;;     }
-
-  ;;     if(to_compare_size_g - flag_size_g > 0) {
-  ;;       load_to_list_chunked(to_compare_g >> flag_size_g, to_compare_size_g - flag_size_g);
-  ;;     }
-  ;;     load_to_list_chunked(value, value_size);
-  ;;     (to_compare_g, to_compare_size_g) = load_from_chunked();
-
-  ;;   } else { ;; shift 1 bit
-
-  ;;     if(list_slice.null?()) {
-  ;;       load_to_list_chunked(to_compare_g, to_compare_size_g);
-  ;;       return build_list();
-  ;;     }
-
-  ;;     to_compare_g = (to_compare_g << 1) | list_slice~load_uint(1);
-  ;;     to_compare_size_g += 1;
-
-  ;;     if(to_compare_size_g == 256) {
-  ;;       load_to_list_chunked(to_compare_g >> flag_size_g, to_compare_size_g - flag_size_g);
-  ;;       to_compare_size_g = flag_size_g;
-  ;;       to_compare_g &= bit_mask;
-  ;;     }
-
-  ;;     if(list_slice.slice_bits() == 0) {
-  ;;       if(~ list_slice.slice_refs_empty?()) {
-  ;;         list_slice = (list_slice~load_ref()).begin_parse();
-  ;;       } else {
-  ;;         list_slice = null();
-  ;;       }
-  ;;     }
-  ;;   }
-  ;; }
-
-  ;; return build_list();
 }
