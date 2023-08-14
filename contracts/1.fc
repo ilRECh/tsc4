@@ -53,6 +53,7 @@
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+cell preload_ref_var(slice cs, int c) asm "PLDREFVAR";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
@@ -63,17 +64,19 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
   while (~ stack.is_null()) {
 
-      tree = stack~pop_back();
+    tree = stack~pop_back();
 
-      if(hash == tree.cell_hash()) {
-        return tree;
-      }
+    if(hash == tree.cell_hash()) {
+      return tree;
+    }
 
-      cs = tree.begin_parse();
+    cs = tree.begin_parse();
 
-      repeat (cs.slice_refs()) {
-          stack~push_back(cs~load_ref());
-      }
+    int ref = 0;
+    repeat (cs.slice_refs()) {
+        stack~push_back(cs.preload_ref_var(ref));
+        ref += 1;
+    }
   }
 
   return begin_cell().end_cell();
