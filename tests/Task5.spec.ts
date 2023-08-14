@@ -34,11 +34,16 @@ describe('Task5', () => {
     it('should give [0]', async () => {
         let result = await task5.getFibonacciSequence(BigInt(0), BigInt(1));
         console.log(result.readTuple());
+        // let result = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence', [
+        //     {type: 'int', value: BigInt(4)},
+        //     {type: 'int', value: BigInt(2)}
+        // ]);
+        // console.log(result.stackReader.readTuple());
     });
 
     it('should give [0, 1, 1]', async () => {
         let result = await task5.getFibonacciSequence(BigInt(0), BigInt(3));
-        console.log(result.readTuple());
+        console.log(result.readTuple());1
     });
 
     it('should give [1, 1, 2]', async () => {
