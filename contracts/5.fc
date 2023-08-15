@@ -27,8 +27,7 @@ tuple solve(int n, int k) asm """
   }>
 
   // Make n+k to k_i for amount of iterations
-  OVER
-  OVER
+  s0 s1 PUSH2
   ADD
   2 SUBINT
 
