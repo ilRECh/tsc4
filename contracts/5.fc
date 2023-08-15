@@ -51,17 +51,6 @@ tuple solve(int n, int k) asm """
   // F_1
   1 PUSHINT
 
-  // If now k_i == 0, then we have it, let's get out
-  // but looking back at the k for the tuple size
-  s2 PUSH
-  0 EQINT
-  IFJMP:<{
-    s3 PUSH
-    TUPLEVAR
-    1 RETARGS
-  }>
-
-
   // Rotating to get the k_i, and put the original k to front
   s2 XCHG0
   s1 s3 XCHG
