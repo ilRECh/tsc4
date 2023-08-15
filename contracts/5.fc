@@ -30,24 +30,19 @@ tuple solve(int n, int k) asm """
   OVER
   OVER
   ADD
+  2 SUBINT
 
-  // k_i--
-  DEC
   // F_0
   0 PUSHINT
 
   // If now k_i == 0, then we have it, let's get out
   OVER
-  0 EQINT
+  -1 EQINT
   IFJMP:<{
     1 TUPLE
     1 RETARGS
   }>
 
-  // k_i--
-  SWAP
-  DEC
-  SWAP
   // F_1
   1 PUSHINT
 
