@@ -55,46 +55,39 @@ forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 cell solve(int hash, cell tree) asm """
-  // For the sake of the while loop
-  SAMEALTSAVE
-
   // Setting the stop at the beginning, just in case no cell will satisfy us
   PUSHNULL
   SWAP
 
-  WHILE:<{ 
-    DUP
-    ISNULL
-    NOT
-   }>DO<{
+  UNTIL:<{
 
     // calculating cell hash
     DUP
     HASHCU
 
-    // comparing cell hash with the provided hash 
+    // Comparing hashes
     DEPTH
     DEC
     PICK
     EQUAL
-    IFJMP:<{ 1 PUSHINT ONLYTOPX RETALT }>
+    IFJMP:<{ 1 PUSHINT RET }>
 
     // loading refs
     CTOS
     DUP
     SREFS
-
     REPEAT:<{ LDREF }>
-
-    // dropping the useless slice now
     DROP
-   }>
+
+    DUP
+    ISNULL
+  }>
 
   DUP
   ISNULL
   IFJMP:<{ 2DROP NEWC ENDC }>
 
-  RET
+  1 RETARGS
 
 """;
 

@@ -104,11 +104,11 @@ describe('Task1', () => {
             {type: 'cell', cell: cellTree}
         ]);
 
-        console.log('Input : ', cell,
-                //   '\nResult: ', result.stackReader.readCell(),
-                  '\nResult: ', result.stackReader,
-                  '\n   Gas:', result.gasUsed);
+        // console.log('Input : ', cell,
+        //         //   '\nResult: ', result.stackReader.readCell(),
+        //           '\nResult: ', result.stackReader,
+        //           '\n   Gas:', result.gasUsed);
 
-        // console.log(result);
+        console.log(result.stack);
     });
 });
