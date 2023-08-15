@@ -47,16 +47,16 @@ tuple solve(int n, int k) asm """
   1 PUSHINT
 
   // Rotating to get the k_i, and put the original k to front
-  s2 XCHG0
-  s1 s3 XCHG
+  2 ROLL
+  s2 s3 XCHG
 
   // Calculating max F_n
   REPEAT:<{
-    s2 s1 PUSH2
+    s1 s1 s2 XCPU2
     ADD
-    SWAP
   }>
 
+  SWAP
   TUPLEVAR
 
   1 RETARGS
@@ -67,29 +67,4 @@ tuple solve(int n, int k) asm """
 (tuple) fibonacci_sequence (int n, int k) method_id {
 
   return solve(n, k);
-
-  ;; if(k == 0) {
-  ;;   return empty_tuple();
-  ;; }
-
-  ;; tuple result = empty_tuple();
-
-  ;; int fib = 0;
-  ;; int n_1 = 1;
-
-  ;; if(n == 0) {
-  ;;   result~tpush(0);
-  ;;   k -= 1;
-  ;; }
-
-  ;; repeat(n - 1) {
-  ;;   (fib, n_1) = (n_1 + fib, fib);
-  ;; }
-
-  ;; repeat(k) {
-  ;;   (fib, n_1) = (n_1 + fib, fib);
-  ;;   result~tpush(fib);
-  ;; }
-
-  ;; return result;
 }
