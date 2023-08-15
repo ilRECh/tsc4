@@ -16,31 +16,96 @@
 () recv_internal() {
 }
 
+tuple solve(int n, int k) asm """
+
+  // k == 0 case
+  DUP
+  0 EQINT
+  IFJMP:<{
+    0 TUPLE
+    1 RETARGS
+  }>
+
+  // Make n+k to k_i for amount of iterations
+  OVER
+  OVER
+  ADD
+
+  // k_i--
+  DEC
+  // F_0
+  0 PUSHINT
+
+  // If now k_i == 0, then we have it, let's get out
+  OVER
+  0 EQINT
+  IFJMP:<{
+    1 TUPLE
+    1 RETARGS
+  }>
+
+  // k_i--
+  SWAP
+  DEC
+  SWAP
+  // F_1
+  1 PUSHINT
+
+  // If now k_i == 0, then we have it, let's get out
+  // but looking back at the k for the tuple size
+  s2 PUSH
+  0 EQINT
+  IFJMP:<{
+    s3 PUSH
+    TUPLEVAR
+    1 RETARGS
+  }>
+
+
+  // Rotating to get the k_i, and put the original k to front
+  s2 XCHG0
+  s1 s3 XCHG
+
+  // Calculating max F_n
+  REPEAT:<{
+    s2 s1 PUSH2
+    ADD
+    SWAP
+  }>
+
+  TUPLEVAR
+
+  1 RETARGS
+
+""";
+
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  
-  if(k == 0) {
-    return empty_tuple();
-  }
 
-  tuple result = empty_tuple();
+  return solve(n, k);
 
-  int fib = 0;
-  int n_1 = 1;
+  ;; if(k == 0) {
+  ;;   return empty_tuple();
+  ;; }
 
-  if(n == 0) {
-    result~tpush(0);
-    k -= 1;
-  }
+  ;; tuple result = empty_tuple();
 
-  repeat(n - 1) {
-    (fib, n_1) = (n_1 + fib, fib);
-  }
+  ;; int fib = 0;
+  ;; int n_1 = 1;
 
-  repeat(k) {
-    (fib, n_1) = (n_1 + fib, fib);
-    result~tpush(fib);
-  }
+  ;; if(n == 0) {
+  ;;   result~tpush(0);
+  ;;   k -= 1;
+  ;; }
 
-  return result;
+  ;; repeat(n - 1) {
+  ;;   (fib, n_1) = (n_1 + fib, fib);
+  ;; }
+
+  ;; repeat(k) {
+  ;;   (fib, n_1) = (n_1 + fib, fib);
+  ;;   result~tpush(fib);
+  ;; }
+
+  ;; return result;
 }

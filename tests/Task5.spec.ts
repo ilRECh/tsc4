@@ -31,14 +31,32 @@ describe('Task5', () => {
         });
     });
 
+    // it('should test', async () => {
+    //     let result = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence', [
+    //         {type: 'int', value: BigInt(0)},
+    //         {type: 'int', value: BigInt(3)}
+    //     ]);
+    //     console.log(result.stackReader);
+    // });
+
+    it('should give []', async () => {
+        let result = await task5.getFibonacciSequence(BigInt(472), BigInt(0));
+        console.log(result.readTuple());
+    });
+
     it('should give [0]', async () => {
         let result = await task5.getFibonacciSequence(BigInt(0), BigInt(1));
         console.log(result.readTuple());
-        // let result = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence', [
-        //     {type: 'int', value: BigInt(4)},
-        //     {type: 'int', value: BigInt(2)}
-        // ]);
-        // console.log(result.stackReader.readTuple());
+    });
+
+    it('should give [1]', async () => {
+        let result = await task5.getFibonacciSequence(BigInt(1), BigInt(1));
+        console.log(result.readTuple());
+    });
+
+    it('should give [0, 1]', async () => {
+        let result = await task5.getFibonacciSequence(BigInt(0), BigInt(2));
+        console.log(result.readTuple());
     });
 
     it('should give [0, 1, 1]', async () => {
@@ -59,7 +77,6 @@ describe('Task5', () => {
         //     {type: 'int', value: BigInt(10)}
         // ]);
         // console.log(result);
-    
     });
 
     it('should give good enough stuff', async () => {
