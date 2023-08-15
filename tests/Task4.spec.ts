@@ -37,22 +37,19 @@ describe('Task4', () => {
         let message2 = 0x41424358595A;
         let message_size = 6 * 8;
 
-        let result = await task4.getEncrypted(BigInt(4), beginCell()
+        let result = await blockchain.runGetMethod(task4.address, 'caesar_cipher_encrypt', [
+            { type: 'int', value: BigInt(4) }, 
+            { type: 'cell', cell: beginCell()
             .storeUint(0, 32)
             .storeUint(message, message_size)
             .storeRef(beginCell()
                 .storeUint(message2, message_size)
                 .endCell())
-            .endCell());
+            .endCell()}
+        ]);
         
-        console.log(result);
-        // let resSlice = result.readCell().beginParse();
-
-        // resSlice.loadUint(32);
-
-        // console.log("Size: ", resSlice.remainingBits,
-        //             "\nOriginal: ", message.toString(16),
-        //             "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+        console.log(result.stack);
+        console.log(result.gasUsed);
     });
 
     it('should decrypt', async () => {
@@ -61,22 +58,19 @@ describe('Task4', () => {
         let message2 = 0x454647424344;
         let message_size = 6 * 8;
 
-        let result = await task4.getDecrypted(BigInt(4), beginCell()
-        .storeUint(0, 32)
-        .storeUint(message, message_size)
-        .storeRef(beginCell()
-            .storeUint(message2, message_size)
-            .endCell())
-        .endCell());
+        let result = await blockchain.runGetMethod(task4.address, 'caesar_cipher_decrypt', [
+            { type: 'int', value: BigInt(4) }, 
+            { type: 'cell', cell: beginCell()
+            .storeUint(0, 32)
+            .storeUint(message, message_size)
+            .storeRef(beginCell()
+                .storeUint(message2, message_size)
+                .endCell())
+            .endCell()}
+        ]);
         
-        console.log(result);
-        // let resSlice = result.readCell().beginParse();
-
-        // resSlice.loadUint(32);
-
-        // console.log("Size: ", resSlice.remainingBits,
-        //             "\nOriginal: ", message.toString(16),
-        //             "\nResult  : ", resSlice.loadUint(message_size).toString(16));
+        console.log(result.stack);
+        console.log(result.gasUsed);
     
     });
 });

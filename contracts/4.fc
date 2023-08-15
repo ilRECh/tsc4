@@ -10,54 +10,30 @@
 }
 
 const ASCII_SIZE = 26;
+global int shift_g;
 
-forall X -> int is_null (X x) asm "ISNULL";
-
-;; Building cell linked-list from the list-style list
-cell build_list(tuple head) inline {
-  (builder element, head) = uncons(head);
-  cell result = element.end_cell();
-
-  while(~ head.is_null()) {
-    (element, head) = uncons(head);
-    result = element.store_ref(result).end_cell();
-  }
-
-  return result;
-}
-
-cell shifting(int shift, slice text_slice) inline {
+cell shifting(slice text_slice, builder shifted) inline {
   int char = 0;
-  builder shifted = begin_cell().store_uint(0, 32);
-  tuple head = null();
-
-  while(1) {
-    repeat(text_slice.slice_bits() / 8) {
-      char = text_slice~load_uint(8);
-    
-      ;; only for a-z A-Z
-      if((char >= 65) & (char <= 90)) {
-        shifted~store_uint((char - 65 + shift) % 26 + 65, 8);
+  repeat(text_slice.slice_bits() / 8) {
+    char = text_slice~load_uint(8);
+  
+    ;; only for a-z A-Z
+    if((char >= 65) & (char <= 90)) {
+      shifted~store_uint((char - 65 + shift_g) % 26 + 65, 8);
+    } else {
+      if((char >= 97) & (char <= 122)) {
+        shifted~store_uint((char - 97 + shift_g) % 26 + 97, 8);
       } else {
-        if((char >= 97) & (char <= 122)) {
-          shifted~store_uint((char - 97 + shift) % 26 + 97, 8);
-        } else {
-          shifted~store_uint(char, 8);
-        }
+        shifted~store_uint(char, 8);
       }
     }
-
-    head = cons(shifted, head);
-
-    if(text_slice.slice_refs()) {
-      shifted = begin_cell();
-      text_slice = (text_slice~load_ref()).begin_parse();
-    } else {
-      return build_list(head);
-    }
   }
 
-  return build_list(head);
+  if(text_slice.slice_refs()) {
+    return shifted.store_ref(shifting((text_slice~load_ref()).begin_parse(), begin_cell())).end_cell();
+  }
+
+  return shifted.end_cell();
 }
 
 ;; testable
@@ -75,8 +51,9 @@ cell shifting(int shift, slice text_slice) inline {
     shift += ASCII_SIZE;
   }
 
+  shift_g = shift;
   text_slice~load_uint(32);
-  return shifting(shift, text_slice);
+  return shifting(text_slice, begin_cell().store_uint(0, 32));
 }
 
 ;; testable
@@ -95,7 +72,8 @@ cell shifting(int shift, slice text_slice) inline {
 
   shift = ASCII_SIZE - shift;
 
+  shift_g = shift;
   text_slice~load_uint(32);
-  return shifting(shift, text_slice);
+  return shifting(text_slice, begin_cell().store_uint(0, 32));
 }
 

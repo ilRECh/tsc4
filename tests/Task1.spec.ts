@@ -104,7 +104,7 @@ describe('Task1', () => {
             {type: 'cell', cell: cellTree}
         ]);
 
-        console.log(result);
+        console.log(result.stack);
         console.log(result.gasUsed);
     });
 
@@ -180,7 +180,7 @@ describe('Task1', () => {
             {type: 'cell', cell: cellTree}
         ]);
 
-        console.log(result);
+        console.log(result.stack);
         console.log(result.gasUsed);
     });
 });
