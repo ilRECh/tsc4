@@ -37,16 +37,14 @@ cell shifting(int shift, slice text_slice) inline {
     
       ;; only for a-z A-Z
       if((char >= 65) & (char <= 90)) {
-        shifted~store_uint((((char - 65 + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
+        shifted~store_uint((char - 65 + shift) % 26 + 65, 8);
       } else {
         if((char >= 97) & (char <= 122)) {
-          shifted~store_uint((((char - 97 + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
+          shifted~store_uint((char - 97 + shift) % 26 + 97, 8);
         } else {
           shifted~store_uint(char, 8);
         }
       }
-
-      ;; shifted~store_uint((((char + shift) >= ASCII_SIZE) ? (shift - ASCII_SIZE) : (shift)) + char, 8);
     }
 
     head = cons(shifted, head);
