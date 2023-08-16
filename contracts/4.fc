@@ -29,7 +29,7 @@ cell shifting(int shift, slice text_slice, builder shifted) inline {
   }
 
   if(text_slice.slice_refs()) {
-    return shifted.store_ref(shifting((text_slice~load_ref()).begin_parse(), begin_cell())).end_cell();
+    return shifted.store_ref(shifting(shift, (text_slice~load_ref()).begin_parse(), begin_cell())).end_cell();
   }
 
   return shifted.end_cell();
