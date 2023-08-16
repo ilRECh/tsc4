@@ -44,7 +44,7 @@ int bit_count(int x) asm "UBITSIZE";
   int size = bit_count(value) - 1;
   value &= ~ (1 << size);
 
-  do {
+  while(size > 0) {
     int to_load = min(1023 - current_element.builder_bits(), size);
     current_element~store_uint(value >> (size - to_load), to_load);
     size -= to_load;
@@ -54,7 +54,7 @@ int bit_count(int x) asm "UBITSIZE";
       head = cons(current_element, head);
       current_element = begin_cell();
     }
-  } until(size == 0);
+  }
 
   return ();
 }

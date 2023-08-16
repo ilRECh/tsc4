@@ -415,12 +415,12 @@ describe('Task3', () => {
         // blockchain and task3 are ready to 
 
         let result = await task3.getLinkedList(BigInt(0b1), BigInt(0b10), beginCell()
-                                                                        .storeUint(0b11, 2)
+                                                                        .storeUint(0b11000, 8)
                                                                        .endCell());
                                                                        
-       dump_cell(dec2bin(0b11),
+       dump_cell("00011000",
                  result.readCell(),
-                 dec2bin(0b1010));
+                 "0001010000");
         
     });
 });
