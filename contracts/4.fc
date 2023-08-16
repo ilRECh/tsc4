@@ -10,19 +10,18 @@
 }
 
 const ASCII_SIZE = 26;
-global int shift_g;
 
-cell shifting(slice text_slice, builder shifted) inline {
+cell shifting(int shift, slice text_slice, builder shifted) inline {
   int char = 0;
   repeat(text_slice.slice_bits() / 8) {
     char = text_slice~load_uint(8);
   
     ;; only for a-z A-Z
     if((char >= 65) & (char <= 90)) {
-      shifted~store_uint((char - 65 + shift_g) % 26 + 65, 8);
+      shifted~store_uint((char - 65 + shift) % 26 + 65, 8);
     } else {
       if((char >= 97) & (char <= 122)) {
-        shifted~store_uint((char - 97 + shift_g) % 26 + 97, 8);
+        shifted~store_uint((char - 97 + shift) % 26 + 97, 8);
       } else {
         shifted~store_uint(char, 8);
       }
@@ -44,16 +43,9 @@ cell shifting(slice text_slice, builder shifted) inline {
   if(((shift % ASCII_SIZE) == 0) | text_slice.slice_empty?()) {
     return text;
   }
-
-  shift %= ASCII_SIZE;
   
-  ;; if(shift < 0) {
-  ;;   shift += ASCII_SIZE;
-  ;; }
-
-  shift_g = shift;
   text_slice~load_uint(32);
-  return shifting(text_slice, begin_cell().store_uint(0, 32));
+  return shifting(shift % ASCII_SIZE, text_slice, begin_cell().store_uint(0, 32));
 }
 
 ;; testable
@@ -64,16 +56,7 @@ cell shifting(slice text_slice, builder shifted) inline {
     return text;
   }
 
-  shift %= ASCII_SIZE;
-  
-  ;; if(shift < 0) {
-  ;;   shift += ASCII_SIZE;
-  ;; }
-
-  shift = ASCII_SIZE - shift;
-
-  shift_g = shift;
   text_slice~load_uint(32);
-  return shifting(text_slice, begin_cell().store_uint(0, 32));
+  return shifting(ASCII_SIZE - (shift % 26), text_slice, begin_cell().store_uint(0, 32));
 }
 
