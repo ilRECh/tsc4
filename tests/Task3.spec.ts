@@ -409,4 +409,18 @@ describe('Task3', () => {
                  dec2bin(0b111111));
         
     });
+
+    it('o', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1), BigInt(0b10), beginCell()
+                                                                        .storeUint(0b11, 2)
+                                                                       .endCell());
+                                                                       
+       dump_cell(dec2bin(0b11),
+                 result.readCell(),
+                 dec2bin(0b1010));
+        
+    });
 });

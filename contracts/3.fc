@@ -46,7 +46,11 @@ int bit_count(int x) asm "UBITSIZE";
   return ();
 }
 
-(int, slice) load_bits_from(int to_compare, slice list_slice) inline {
+(int, slice) load_bits_from(int to_compare, int flag_size, slice list_slice) inline {
+  if((to_compare > 1) & ((bit_count(to_compare) - 1) > flag_size)) {
+    load_to_list(to_compare);
+    to_compare = 1;
+  }
 
   while((bit_count(to_compare) < 256) & (~ list_slice.null?())) {
     int to_load = min(256 - bit_count(to_compare), list_slice.slice_bits());
@@ -93,7 +97,7 @@ cell build_list() inline {
   value = value | (1 << bit_count(value));
 
   do {
-    (to_compare, list_slice) = load_bits_from(to_compare, list_slice);
+    (to_compare, list_slice) = load_bits_from(to_compare, flag_size, list_slice);
     int bit_iterations = bit_count(to_compare) - 1 - flag_size;
 
     while(bit_iterations >= 0) {
@@ -104,11 +108,6 @@ cell build_list() inline {
         bit_iterations -= flag_size;
       } else {
         bit_iterations -= 1;
-
-        if(bit_iterations < 0) {
-          load_to_list(to_compare);
-          to_compare = 1;
-        }
       }
     }
 
