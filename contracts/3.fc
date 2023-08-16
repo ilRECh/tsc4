@@ -98,9 +98,9 @@ cell build_list() inline {
 
   slice list_slice = linked_list.begin_parse();
 
-  if(list_slice.slice_empty?()) {
-    return begin_cell().end_cell();
-  }
+  ;; if(list_slice.slice_empty?()) {
+    ;; return begin_cell().end_cell();
+  ;; }
 
   int flag_size = bit_count(flag);
   int flag_bit_mask = ~ (-1 << flag_size);
