@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { beginCell, Cell, toNano, TupleReader } from 'ton-core';
+import { beginCell, Cell, toNano, TupleReader, BitString } from 'ton-core';
 import { Task3 } from '../wrappers/Task3';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -55,227 +55,246 @@ describe('Task3', () => {
                   '\nExpected: ' + modified);
     }
 
-    // it('fun', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('fun', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1001), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1001), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    console.log(result);
+       console.log(result);
         
-    // });
+    });
 
-    // it('a', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('z', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1001), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1011011), BigInt(0b1), beginCell()
+                                                                        .storeUint(0b101, 3)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b101, 3)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b100100001001) + dec2bin(0b100100001001));
+       dump_cell(dec2bin(0b101101),
+                 result.readCell(),
+                 dec2bin(0b101101));
         
-    // });
+    });
 
-    // it('b', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('a', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1001), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b100001100001));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b100100001001) + dec2bin(0b100100001001));
         
-    // });
+    });
 
-    // it('c', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('b', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b1100001111000011));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b100001100001));
         
-    // });
+    });
 
-    // it('d', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('c', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b111), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b11100001111110000111));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b1100001111000011));
         
-    // });
+    });
 
-    // it('e', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('d', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b111), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b1111100001111111111000011111));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b11100001111110000111));
         
-    // });
+    });
 
-    // it('f', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('e', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
-    //                                                                     .storeUint(0b111100001111, 12)
-    //                                                                     .storeRef(
-    //                                                                         beginCell()
-    //                                                                             .storeUint(0b111100001111, 12)
-    //                                                                         .endCell()
-    //                                                                     )
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
-    //              result.readCell(),
-    //              dec2bin(0b1111100001111111111000011111));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b1111100001111111111000011111));
         
-    // });
+    });
 
-    // it('g', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('f', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b111), BigInt(0b1), beginCell()
-    //                                                                     .storeUint(0b1, 1)
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b11111), beginCell()
+                                                                        .storeUint(0b111100001111, 12)
+                                                                        .storeRef(
+                                                                            beginCell()
+                                                                                .storeUint(0b111100001111, 12)
+                                                                            .endCell()
+                                                                        )
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b1),
-    //              result.readCell(),
-    //              dec2bin(0b1));
+       dump_cell(dec2bin(0b111100001111) + dec2bin(0b111100001111),
+                 result.readCell(),
+                 dec2bin(0b1111100001111111111000011111));
         
-    // });
+    });
 
-    // it('h', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('g', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
-    //                                                                         .storeUint(0b1, 1)
-    //                                                                         .storeRef(
-    //                                                                             beginCell()
-    //                                                                                 .storeUint(0b1, 1)
-    //                                                                                 .storeRef(
-    //                                                                                     beginCell()
-    //                                                                                         .storeUint(0b1, 1)
-    //                                                                                         .storeRef(
-    //                                                                                             beginCell()
-    //                                                                                                 .storeUint(0b1, 1)
-    //                                                                                                 .storeRef(
-    //                                                                                                     beginCell()
-    //                                                                                                         .storeUint(0b1, 1)
-    //                                                                                                         .storeRef(
-    //                                                                                                             beginCell()
-    //                                                                                                                 .storeUint(0b1, 1)
-    //                                                                                                                 .storeRef(
-    //                                                                                                                     beginCell()
-    //                                                                                                                         .storeUint(0b1, 1)
-    //                                                                                                                         .storeRef(
-    //                                                                                                                             beginCell()
-    //                                                                                                                                 .storeUint(0b1, 1)
-    //                                                                                                                             .endCell()
-    //                                                                                                                         )
-    //                                                                                                                     .endCell()
-    //                                                                                                                 )
-    //                                                                                                             .endCell()
-    //                                                                                                         )
-    //                                                                                                     .endCell()
-    //                                                                                                 )
-    //                                                                                             .endCell()
-    //                                                                                         )
-    //                                                                                     .endCell()
-    //                                                                                 )
-    //                                                                             .endCell()
-    //                                                                         )
-    //                                                                     .endCell());
+        let result = await task3.getLinkedList(BigInt(0b111), BigInt(0b1), beginCell()
+                                                                        .storeUint(0b1, 1)
+                                                                       .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b11111111),
-    //              result.readCell(),
-    //              dec2bin(0b11));
+       dump_cell(dec2bin(0b1),
+                 result.readCell(),
+                 dec2bin(0b1));
         
-    // });
+    });
 
-    // it('i', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('h', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b10101), BigInt(0b10), beginCell()
-    //                                                                     .storeUint(0b1010100110011001110101001101, 28)
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
+                                                                            .storeUint(0b1, 1)
+                                                                            .storeRef(
+                                                                                beginCell()
+                                                                                    .storeUint(0b1, 1)
+                                                                                    .storeRef(
+                                                                                        beginCell()
+                                                                                            .storeUint(0b1, 1)
+                                                                                            .storeRef(
+                                                                                                beginCell()
+                                                                                                    .storeUint(0b1, 1)
+                                                                                                    .storeRef(
+                                                                                                        beginCell()
+                                                                                                            .storeUint(0b1, 1)
+                                                                                                            .storeRef(
+                                                                                                                beginCell()
+                                                                                                                    .storeUint(0b1, 1)
+                                                                                                                    .storeRef(
+                                                                                                                        beginCell()
+                                                                                                                            .storeUint(0b1, 1)
+                                                                                                                            .storeRef(
+                                                                                                                                beginCell()
+                                                                                                                                    .storeUint(0b1, 1)
+                                                                                                                                .endCell()
+                                                                                                                            )
+                                                                                                                        .endCell()
+                                                                                                                    )
+                                                                                                                .endCell()
+                                                                                                            )
+                                                                                                        .endCell()
+                                                                                                    )
+                                                                                                .endCell()
+                                                                                            )
+                                                                                        .endCell()
+                                                                                    )
+                                                                                .endCell()
+                                                                            )
+                                                                        .endCell());
                                                                        
-    //    dump_cell(dec2bin(0b1010100110011001110101001101),
-    //              result.readCell(),
-    //              dec2bin(0b1000110011001110001101));
+       dump_cell(dec2bin(0b11111111),
+                 result.readCell(),
+                 dec2bin(0b11));
         
-    // });
+    });
 
-    // it('j', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('i', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b10001), beginCell()
-    //                                                                     .storeUint(BigInt("0b1110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011100001110111"), 238)
-    //                                                                    .endCell());
+        let result = await task3.getLinkedList(BigInt(0b10101), BigInt(0b10), beginCell()
+                                                                        .storeUint(0b1010100110011001110101001101, 28)
+                                                                       .endCell());
                                                                        
-    //    dump_cell("1110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011100001110111",
-    //              result.readCell(),
-    //              "111010001100011101000110001110100011000111010001100011101000110001110100011000111010001100011101000110001");
+       dump_cell(dec2bin(0b1010100110011001110101001101),
+                 result.readCell(),
+                 dec2bin(0b1000110011001110001101));
         
-    // });
+    });
+
+    it('j', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b10001), beginCell()
+                                                                        .storeUint(BigInt("0b1110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011100001110111"), 238)
+                                                                       .endCell());
+                                                                       
+       dump_cell("1110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011111111110111111111101111111111011100001110111",
+                 result.readCell(),
+                 "111010001100011101000110001110100011000111010001100011101000110001110100011000111010001100011101000110001");
+        
+    });
 
     it('k', async () => {
         // the check is done inside beforeEach
@@ -300,51 +319,94 @@ describe('Task3', () => {
         console.log(result.gasUsed);
     });
 
-    // it('l', async () => {
-    //     // the check is done inside beforeEach
-    //     // blockchain and task3 are ready to 
+    it('l', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
 
-    //     let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
-    //                                                                         .storeRef(
-    //                                                                             beginCell()
-    //                                                                                 .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
-    //                                                                                 .storeRef(
-    //                                                                                     beginCell()
-    //                                                                                 .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
-    //                                                                                 .storeRef(
-    //                                                                                             beginCell()
-    //                                                                                 .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
-    //                                                                                 .storeRef(
-    //                                                                                                     beginCell()
-    //                                                                                 .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
-    //                                                                                 .storeRef(
-    //                                                                                                             beginCell()
-    //                                                                                                                 .storeUint(0b1, 1)
-    //                                                                                                                 .storeRef(
-    //                                                                                                                     beginCell()
-    //                                                                                                                         .storeUint(0b1, 1)
-    //                                                                                                                         .storeRef(
-    //                                                                                                                             beginCell()
-    //                                                                                                                                 .storeUint(0b1, 1)
-    //                                                                                                                             .endCell()
-    //                                                                                                                         )
-    //                                                                                                                     .endCell()
-    //                                                                                                                 )
-    //                                                                                                             .endCell()
-    //                                                                                                         )
-    //                                                                                                     .endCell()
-    //                                                                                                 )
-    //                                                                                             .endCell()
-    //                                                                                         )
-    //                                                                                     .endCell()
-    //                                                                                 )
-    //                                                                             .endCell()
-    //                                                                         )
-    //                                                                     .endCell());
+        let result = await task3.getLinkedList(BigInt(0b1111), BigInt(0b1), beginCell()
+                                                                            .storeRef(
+                                                                                beginCell()
+                                                                                    .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
+                                                                                    .storeRef(
+                                                                                        beginCell()
+                                                                                    .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
+                                                                                    .storeRef(
+                                                                                                beginCell()
+                                                                                    .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
+                                                                                    .storeRef(
+                                                                                                        beginCell()
+                                                                                    .storeUint(BigInt("0b1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110101010101010101010101010101010101010111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101110111011101111"), 436)
+                                                                                    .storeRef(
+                                                                                                                beginCell()
+                                                                                                                    .storeUint(0b1, 1)
+                                                                                                                    .storeRef(
+                                                                                                                        beginCell()
+                                                                                                                            .storeUint(0b1, 1)
+                                                                                                                        .endCell()
+                                                                                                                    )
+                                                                                                                .endCell()
+                                                                                                            )
+                                                                                                        .endCell()
+                                                                                                    )
+                                                                                                .endCell()
+                                                                                            )
+                                                                                        .endCell()
+                                                                                    )
+                                                                                .endCell()
+                                                                            )
+                                                                        .endCell());
                                                                        
-    //    dump_cell("",
-    //              result.readCell(),
-    //              "");
+       dump_cell("",
+                 result.readCell(),
+                 "");
         
-    // });
+    });
+
+    it('m', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt(0b11), BigInt(0b1000001), beginCell()
+                                                                            .storeRef(
+                                                                                beginCell()
+                                                                                    .storeUint(BigInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"), 455)
+                                                                                    .storeRef(
+                                                                                        beginCell()
+                                                                                    .storeUint(BigInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"), 455)
+                                                                                    .storeRef(
+                                                                                                beginCell()
+                                                                                    .storeUint(BigInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"), 455)
+                                                                                    .storeRef(
+                                                                                                        beginCell()
+                                                                                    .storeUint(BigInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011"), 455)
+                                                                                                        .endCell()
+                                                                                                    )
+                                                                                                .endCell()
+                                                                                            )
+                                                                                        .endCell()
+                                                                                    )
+                                                                                .endCell()
+                                                                            )
+                                                                        .endCell());
+                                                                       
+       dump_cell("",
+                 result.readCell(),
+                 "");
+        
+    });
+
+    it('n', async () => {
+        // the check is done inside beforeEach
+        // blockchain and task3 are ready to 
+
+        let result = await task3.getLinkedList(BigInt("0b10110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110"), BigInt(0b111), beginCell()
+                                                                                .storeRef(beginCell()
+                                                                                    .storeUint(BigInt("0b1011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011011010110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110"), 256)
+                                                                                    .endCell())
+                                                                                .endCell());
+       dump_cell("a long bit string, but small output",
+                 result.readCell(),
+                 dec2bin(0b111111));
+        
+    });
 });
