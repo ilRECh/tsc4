@@ -47,9 +47,9 @@ cell shifting(slice text_slice, builder shifted) inline {
 
   shift %= ASCII_SIZE;
   
-  if(shift < 0) {
-    shift += ASCII_SIZE;
-  }
+  ;; if(shift < 0) {
+  ;;   shift += ASCII_SIZE;
+  ;; }
 
   shift_g = shift;
   text_slice~load_uint(32);
@@ -66,9 +66,9 @@ cell shifting(slice text_slice, builder shifted) inline {
 
   shift %= ASCII_SIZE;
   
-  if(shift < 0) {
-    shift += ASCII_SIZE;
-  }
+  ;; if(shift < 0) {
+  ;;   shift += ASCII_SIZE;
+  ;; }
 
   shift = ASCII_SIZE - shift;
 
