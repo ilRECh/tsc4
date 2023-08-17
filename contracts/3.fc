@@ -103,7 +103,7 @@ cell build_list() inline {
   }
 
   if((flag <= 0) | (value <= 0)) {
-    return begin_cell().end_cell();
+    return null();
   }
 
   int flag_size = bit_count(flag);
