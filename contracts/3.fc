@@ -96,41 +96,43 @@ cell build_list() inline {
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
 
-  return linked_list;
+  slice list_slice = linked_list.begin_parse();
 
-  ;; slice list_slice = linked_list.begin_parse();
+  if(list_slice.slice_empty?()) {
+    return begin_cell().end_cell();
+  }
 
-  ;; if(list_slice.slice_empty?()) {
-  ;;   return begin_cell().end_cell();
-  ;; }
+  if((flag <= 0) | (value <= 0)) {
+    return begin_cell().end_cell();
+  }
 
-  ;; int flag_size = bit_count(flag);
-  ;; int flag_bit_mask = ~ (-1 << flag_size);
-  ;; int to_compare = 1;
-  ;; tuple head = null();
-  ;; builder current_element = begin_cell();
-  ;; value = value | (1 << bit_count(value));
+  int flag_size = bit_count(flag);
+  int flag_bit_mask = ~ (-1 << flag_size);
+  int to_compare = 1;
+  tuple head = null();
+  builder current_element = begin_cell();
+  value = value | (1 << bit_count(value));
 
-  ;; do {
-  ;;   (to_compare, list_slice) = load_bits_from(to_compare, flag_size, list_slice);
-  ;;   int bit_iterations = bit_count(to_compare) - 1 - flag_size;
+  do {
+    (to_compare, list_slice) = load_bits_from(to_compare, flag_size, list_slice);
+    int bit_iterations = bit_count(to_compare) - 1 - flag_size;
 
-  ;;   while(bit_iterations >= 0) {
-  ;;     if(((to_compare >> bit_iterations) & flag_bit_mask) == flag) {
-  ;;       load_to_list(to_compare >> (flag_size + bit_iterations));
-  ;;       load_to_list(value);
-  ;;       to_compare = (to_compare & (~ (-1 << bit_iterations))) | (1 << bit_iterations);
-  ;;       bit_iterations -= flag_size;
-  ;;     } else {
-  ;;       bit_iterations -= 1;
-  ;;     }
-  ;;   }
+    while(bit_iterations >= 0) {
+      if(((to_compare >> bit_iterations) & flag_bit_mask) == flag) {
+        load_to_list(to_compare >> (flag_size + bit_iterations));
+        load_to_list(value);
+        to_compare = (to_compare & (~ (-1 << bit_iterations))) | (1 << bit_iterations);
+        bit_iterations -= flag_size;
+      } else {
+        bit_iterations -= 1;
+      }
+    }
 
-  ;; } until(list_slice.null?());
+  } until(list_slice.null?());
 
-  ;; if(to_compare > 1) {
-  ;;   load_to_list(to_compare);
-  ;; }
+  if(to_compare > 1) {
+    load_to_list(to_compare);
+  }
 
-  ;; return build_list();
+  return build_list();
 }
