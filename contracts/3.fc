@@ -2,24 +2,11 @@
   TASK 3 - Find and replace binary substring
   Binary string is represented as a cell linked list: string splitted to chunks,
   first chunk stored to the root cell, next one to the cell in ref and so on;
-  each cell can have only one ref.
+  each cell can have only one ref. 
   Write the method that find and replaces one flags in the binary string
   with another value. Flags and values can be can be of any length, but
   strictly up to 128 bits. The method must replace every flag it finds.
   Flag and the value to be replaced is guaranteed to be greater than 0.
-  Flag and the value may be of different lengths.
-  When there are overlapping flags, only the first one
-  from the overlap needs to be replaced (for example, if the flag is 101,
-  value is 111, and string is 10101, then the result would be 11101, but if
-  the string is 1010101, then the result would be 1110111).
-  Every cell in the input linked list, except for the last one
-  (the one that is the deepest in the tree), is guaranteed to be full
-  (guaranteed to contain 1023 bits).
-  The requirements on the output cell are more loose - only the concatenation of bits
-  from the linked list needs to match that of the expected answer, but the structure
-  itself may be different (for example, for the purposes of comparing the answer,
-  a cell with bit 1 and a ref containing bits 10 is the same as a cell containing
-  bit 11 and a ref with bit 0 - they both make up a bitstring 110).
   Lets give a simple example. We have the target flag 101110101 and the value
   to be written 111111111 as inputs, and a linked list of cells, in which the bit
   value of the first cell ends with ...10100001011, and in the ref we have cell that
@@ -32,23 +19,51 @@
 () recv_internal() {
 }
 
+global slice list_slice;
+global int flag_size;
 global tuple head;
 global builder current_element;
 
 forall X -> int is_null (X x) asm "ISNULL";
 int bit_count(int x) asm "UBITSIZE";
 
+(int, int) load_from_chunked() inline {
+  int data_bits_remain_to_load = min(flag_size, list_slice.slice_bits());
+  int result = 0;
+  int result_size = 0;
+
+  while((flag_size - result_size) > 0) {
+    result_size += data_bits_remain_to_load;
+    result |= list_slice~load_uint(data_bits_remain_to_load) << (flag_size - result_size);
+
+    if(list_slice.slice_bits() == 0) {
+      if(~ list_slice.slice_refs_empty?()) {
+        list_slice = (list_slice~load_ref()).begin_parse();
+        data_bits_remain_to_load = min(flag_size - result_size, list_slice.slice_bits());
+      } else {
+        result >>= flag_size - result_size;
+
+        list_slice = null();
+        
+        return (result, result_size);
+      }
+    }
+  }
+
+  return (result, result_size);
+}
+
 ;; I'm thinking that full value of the value must be loaded
-() load_to_list(int value) impure inline {
+() load_to_list_chunked(int value,
+                        int value_size) impure inline {
 
-  int size = bit_count(value) - 1;
-  value &= ~ (1 << size);
+  int to_load = min(1023 - current_element.builder_bits(), value_size);
 
-  while(size > 0) {
-    int to_load = min(1023 - current_element.builder_bits(), size);
-    current_element~store_uint(value >> (size - to_load), to_load);
-    size -= to_load;
-    value &= ~ (-1 << size);
+  while(value_size > 0) {
+    current_element~store_uint(value >> (value_size - to_load), to_load);
+    value &= ~ ((value >> (value_size - to_load)) << (value_size - to_load));
+    value_size -= to_load;
+    to_load = min(value_size, 1023);
 
     if(current_element.builder_bits() == 1023) {
       head = cons(current_element, head);
@@ -57,28 +72,6 @@ int bit_count(int x) asm "UBITSIZE";
   }
 
   return ();
-}
-
-(int, slice) load_bits_from(int to_compare, int flag_size, slice list_slice) inline {
-  if((to_compare > 1) & ((bit_count(to_compare) - 1) > flag_size)) {
-    load_to_list(to_compare);
-    to_compare = 1;
-  }
-
-  while((bit_count(to_compare) < 256) & (~ list_slice.null?())) {
-    int to_load = min(256 - bit_count(to_compare), list_slice.slice_bits());
-    to_compare = (to_compare << to_load) | list_slice~load_uint(to_load);
-
-    if(list_slice.slice_bits() == 0) {
-      if(list_slice.slice_refs()) {
-        list_slice = (list_slice~load_ref()).begin_parse();
-      } else {
-        return (to_compare, null());
-      }
-    }
-  }
-
-  return (to_compare, list_slice);
 }
 
 ;; Building cell linked-list from the list-style list
@@ -96,38 +89,62 @@ cell build_list() inline {
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
 
-  slice list_slice = linked_list.begin_parse();
+  list_slice = linked_list.begin_parse();
 
   if(list_slice.slice_empty?()) {
     return begin_cell().end_cell();
   }
 
-  int flag_size = bit_count(flag);
-  int flag_bit_mask = ~ (-1 << flag_size);
-  int to_compare = 1;
-  tuple head = null();
-  builder current_element = begin_cell();
-  value = value | (1 << bit_count(value));
+  flag_size = bit_count(flag);
+  int value_size = bit_count(value);
 
-  do {
-    (to_compare, list_slice) = load_bits_from(to_compare, flag_size, list_slice);
-    int bit_iterations = bit_count(to_compare) - 1 - flag_size;
+  (int to_compare, int to_compare_size) = load_from_chunked();
 
-    while(bit_iterations >= 0) {
-      if(((to_compare >> bit_iterations) & flag_bit_mask) == flag) {
-        load_to_list(to_compare >> (flag_size + bit_iterations));
-        load_to_list(value);
-        to_compare = (to_compare & (~ (-1 << bit_iterations))) | (1 << bit_iterations);
-        bit_iterations -= flag_size;
-      } else {
-        bit_iterations -= 1;
+  head = null();
+  current_element = begin_cell();
+  int bit_mask = ~ ((-1) << flag_size);
+
+  while(true) {
+    if((to_compare & bit_mask) == flag) {
+    
+      if(list_slice.null?()) {
+        if(to_compare_size - flag_size > 0) {
+          load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        }
+        load_to_list_chunked(value, value_size);
+        return build_list();
+      }
+
+      if(to_compare_size - flag_size > 0) {
+        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+      }
+      load_to_list_chunked(value, value_size);
+      (to_compare, to_compare_size) = load_from_chunked();
+
+    } else { ;; shift 1 bit
+
+      if(list_slice.null?()) {
+        load_to_list_chunked(to_compare, to_compare_size);
+        return build_list();
+      }
+
+      to_compare = (to_compare << 1) | list_slice~load_uint(1);
+      to_compare_size += 1;
+
+      if(to_compare_size == 256) {
+        load_to_list_chunked(to_compare >> flag_size, to_compare_size - flag_size);
+        to_compare_size = flag_size;
+        to_compare &= bit_mask;
+      }
+
+      if(list_slice.slice_bits() == 0) {
+        if(~ list_slice.slice_refs_empty?()) {
+          list_slice = (list_slice~load_ref()).begin_parse();
+        } else {
+          list_slice = null();
+        }
       }
     }
-
-  } until(list_slice.null?());
-
-  if(to_compare > 1) {
-    load_to_list(to_compare);
   }
 
   return build_list();
