@@ -102,10 +102,6 @@ cell build_list() inline {
     return begin_cell().end_cell();
   }
 
-  if((flag <= 0) | (value <= 0)) {
-    return null();
-  }
-
   int flag_size = bit_count(flag);
   int flag_bit_mask = ~ (-1 << flag_size);
   int to_compare = 1;
