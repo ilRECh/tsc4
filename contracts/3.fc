@@ -102,14 +102,6 @@ cell build_list() inline {
     return begin_cell().end_cell();
   }
 
-  if(flag <= 0) {
-    flag *= -1;
-  }
-
-  if(value <= 0) {
-    flag *= -1;
-  }
-
   int flag_size = bit_count(flag);
   int flag_bit_mask = ~ (-1 << flag_size);
   int to_compare = 1;
